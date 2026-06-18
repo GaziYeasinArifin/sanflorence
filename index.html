@@ -481,8 +481,8 @@
     })();
 
     /* ============================================================
-       BACKGROUND — animated, interactive molten-red field (WebGL)
-       Flowing domain-warped reds; a warm glow blooms at the cursor.
+       BACKGROUND — animated molten red fading to near-black at the
+       bottom half. Ambient flow only (no cursor interaction).
        ============================================================ */
     (function () {
       var canvas = document.getElementById('bg');
@@ -490,43 +490,30 @@
       var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       var gl = null;
       try { gl = canvas.getContext('webgl', { alpha: false, antialias: false, premultipliedAlpha: false }); } catch (e) {}
-      if (!gl) return; // CSS radial-gradient fallback already on body.home
+      if (!gl) return; // CSS red->black gradient fallback on body.home
 
-      var SCALE = 0.7; // render under-res then scale up — it's a soft gradient
+      var SCALE = 0.7;
       var VS = 'attribute vec2 p; varying vec2 uv; void main(){ uv = p*0.5+0.5; gl_Position = vec4(p,0.0,1.0); }';
       var FS = [
         'precision highp float;',
         'varying vec2 uv;',
-        'uniform vec2 res; uniform float time; uniform vec2 mouse; uniform float mAmt;',
+        'uniform vec2 res; uniform float time;',
         'float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1,311.7)))*43758.5453123); }',
         'float vnoise(vec2 p){ vec2 i=floor(p), f=fract(p); float a=hash(i),b=hash(i+vec2(1.,0.)),c=hash(i+vec2(0.,1.)),d=hash(i+vec2(1.,1.)); vec2 u=f*f*(3.-2.*f); return mix(mix(a,b,u.x),mix(c,d,u.x),u.y); }',
         'float fbm(vec2 p){ float v=0.,a=.5; for(int i=0;i<3;i++){ v+=a*vnoise(p); p*=2.0; a*=.5; } return v; }',
         'void main(){',
         '  float aspect = res.x/res.y;',
         '  vec2 p = vec2(uv.x*aspect, uv.y);',
-        '  vec2 m = vec2(mouse.x*aspect, mouse.y);',
         '  float t = time*0.05;',
-        '  vec2 rel = p - m;',
-        '  float dM = length(rel);',
-        '  float infl = smoothstep(0.9, 0.0, dM);',
-        '  float ang = infl*3.0 + time*0.7*infl;',                 // animated vortex near cursor
-        '  float cc = cos(ang), ss = sin(ang);',
-        '  vec2 relR = vec2(rel.x*cc - rel.y*ss, rel.x*ss + rel.y*cc);',
-        '  vec2 pp = m + relR + normalize(rel + 1e-4) * infl * 0.12 * mAmt;', // swirl + push (lens)
-        '  vec2 w = vec2(fbm(pp*1.3 + vec2(0.0, t)), fbm(pp*1.3 + vec2(3.3, -t)));',
-        '  float n = fbm(pp*1.9 + w*1.4 + vec2(t*0.5, -t*0.3));',
-        '  float bloom = exp(-dM*3.5) * mAmt;',                    // hot ember core
-        '  float rings = smoothstep(0.7, 0.0, dM) * (0.5 + 0.5*sin(dM*24.0 - time*3.5)) * mAmt;', // ripples
-        '  n += bloom*0.6;',
+        '  vec2 w = vec2(fbm(p*1.3 + vec2(0.0, t)), fbm(p*1.3 + vec2(3.3, -t)));',
+        '  float n = fbm(p*1.9 + w*1.4 + vec2(t*0.5, -t*0.3));',
         '  vec3 cDark = vec3(0.40, 0.0, 0.05);',
         '  vec3 cMid  = vec3(0.86, 0.05, 0.13);',
         '  vec3 cHot  = vec3(1.0, 0.27, 0.15);',
-        '  vec3 cGlow = vec3(1.0, 0.60, 0.42);',
         '  vec3 col = mix(cDark, cMid, smoothstep(0.12, 0.55, n));',
         '  col = mix(col, cHot, smoothstep(0.5, 0.95, n));',
-        '  float darken = smoothstep(0.08, 0.60, uv.y);',          // red top -> near-black bottom half
+        '  float darken = smoothstep(0.08, 0.60, uv.y);',
         '  col *= mix(0.04, 1.0, darken);',
-        '  col += cGlow * (bloom*0.9 + rings*0.18);',              // ember + rings stay lit, even in the dark
         '  gl_FragColor = vec4(col, 1.0);',
         '}'
       ].join('\n');
@@ -540,7 +527,7 @@
       var buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]), gl.STATIC_DRAW);
       var ploc = gl.getAttribLocation(prog, 'p'); gl.enableVertexAttribArray(ploc); gl.vertexAttribPointer(ploc, 2, gl.FLOAT, false, 0, 0);
-      var U = {}; ['res', 'time', 'mouse', 'mAmt'].forEach(function (n) { U[n] = gl.getUniformLocation(prog, n); });
+      var U = {}; ['res', 'time'].forEach(function (n) { U[n] = gl.getUniformLocation(prog, n); });
 
       function resize() {
         canvas.width = Math.max(1, Math.round(window.innerWidth * SCALE));
@@ -550,21 +537,12 @@
       resize();
       var rt; window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(resize, 150); });
 
-      var mx = 0.5, my = 0.5, tgtAmt = 0.0, amt = 0.0, t0 = performance.now();
-      window.addEventListener('mousemove', function (e) {
-        mx = e.clientX / window.innerWidth; my = e.clientY / window.innerHeight; tgtAmt = 1.0;
-      }, { passive: true });
-      document.addEventListener('mouseleave', function () { tgtAmt = 0.0; });
-      window.addEventListener('blur', function () { tgtAmt = 0.0; });
-
+      var t0 = performance.now();
       function frame() {
-        amt += (tgtAmt - amt) * 0.09;
         var time = (performance.now() - t0) / 1000;
         gl.useProgram(prog);
         gl.uniform2f(U.res, canvas.width, canvas.height);
         gl.uniform1f(U.time, reduce ? 0.0 : time);
-        gl.uniform2f(U.mouse, mx, 1.0 - my);
-        gl.uniform1f(U.mAmt, amt);
         gl.drawArrays(gl.TRIANGLES, 0, 6);
         if (!reduce) requestAnimationFrame(frame);
       }
