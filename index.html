@@ -139,6 +139,9 @@
       line-height: 0.88;
       letter-spacing: -0.03em;
       color: #fff;
+      cursor: default;
+      -webkit-user-select: none;
+      user-select: none;
     }
     .hero-line {
       font-size: clamp(18px, 2.1vw, 32px);
@@ -149,7 +152,22 @@
       text-align: right;
       text-wrap: balance;
       flex-shrink: 1;
+      cursor: default;
+      -webkit-user-select: none;
+      user-select: none;
     }
+    .hero-line.typing { text-align: left; white-space: nowrap; flex: none; }
+    .hl-caret { display: none; }
+    .hl-caret.on {
+      display: inline-block;
+      width: 2px;
+      height: 0.82em;
+      margin-left: 4px;
+      background: currentColor;
+      vertical-align: -0.08em;
+      animation: hl-blink 0.9s step-end infinite;
+    }
+    @keyframes hl-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
     /* ---- Cards (iOS liquid glass) ---- */
     .carousel-wrap { flex: 1 1 auto; min-height: 0; display: flex; align-items: center; }
@@ -158,12 +176,18 @@
       overflow-x: auto;
       overflow-y: hidden;
       padding: 12px var(--pad-x);
-      cursor: grab;
+      cursor: default;
       scrollbar-width: none;
       -ms-overflow-style: none;
     }
+    .carousel.marquee {
+      padding-left: 0;
+      padding-right: 0;
+      -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 var(--pad-x), #000 calc(100% - var(--pad-x)), transparent);
+      mask-image: linear-gradient(90deg, transparent 0, #000 var(--pad-x), #000 calc(100% - var(--pad-x)), transparent);
+    }
     .carousel::-webkit-scrollbar { display: none; }
-    .carousel.dragging { cursor: grabbing; }
+    .carousel.dragging { cursor: default; }
     .track { display: flex; gap: clamp(16px, 1.6vw, 24px); width: max-content; }
     .card {
       position: relative;
@@ -225,7 +249,7 @@
     .card-sub { position: relative; z-index: 1; font-size: 12px; color: rgba(255,255,255,0.7); margin-top: 3px; }
     .card-tagline { position: relative; z-index: 1; font-size: 13px; line-height: 1.5; color: rgba(255,255,255,0.78); margin-top: 10px; }
     .card-foot { position: relative; z-index: 1; margin-top: clamp(14px, 2vh, 20px); }
-    .card-store { display: inline-block; }
+    .card-store { display: inline-block; cursor: default; }
     .card-store img { display: block; height: 38px; width: auto; }
     .card-soon { font-size: 11px; text-transform: uppercase; letter-spacing: 0.16em; color: rgba(255,255,255,0.75); display: inline-flex; align-items: center; gap: 8px; }
     .card-dimmed { opacity: 0.72; }
@@ -253,6 +277,10 @@
 
     /* ---- Responsive ---- */
     @media (max-width: 900px) { .hero-line { max-width: 24ch; } }
+    @media (min-width: 1024px) {
+      .hero { padding-top: max(8px, calc(6vh - 40px)); } /* lift the hero block 40px on desktop */
+      .hero-line { white-space: nowrap; max-width: none; font-size: clamp(18px, 1.7vw, 34px); }
+    }
     @media (max-width: 768px) {
       :root { --pad-x: 22px; }
       .nav-brand .brand-text { display: none; }
@@ -300,7 +328,7 @@
     <!-- ===================== HERO ===================== -->
     <header class="hero">
       <h1 class="hero-title">Apps</h1>
-      <p class="hero-line">Thoughtful apps, crafted with love in the SF Bay Area.</p>
+      <p class="hero-line" aria-label="Thoughtful apps, crafted with love in the SF Bay Area."><span class="hl-text">Thoughtful apps, crafted with love in the SF Bay Area.</span><span class="hl-caret" aria-hidden="true"></span></p>
     </header>
 
     <!-- ===================== CARDS ===================== -->
@@ -383,6 +411,78 @@
             </div>
           </article>
 
+          <!-- Card 4 — Coming soon (placeholder) -->
+          <article class="card card-dimmed" style="--g1:#8E8E8E; --g2:#555555;">
+            <div class="card-head"><span class="card-index">04</span></div>
+            <div class="card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+            </div>
+            <div class="card-cat">In the studio</div>
+            <h2 class="card-name">Coming soon</h2>
+            <div class="card-sub">In development</div>
+            <p class="card-tagline">A fresh idea, taking shape.</p>
+            <div class="card-foot">
+              <span class="card-soon">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                Coming soon
+              </span>
+            </div>
+          </article>
+
+          <!-- Card 5 — Coming soon (placeholder) -->
+          <article class="card card-dimmed" style="--g1:#9C9488; --g2:#5C544A;">
+            <div class="card-head"><span class="card-index">05</span></div>
+            <div class="card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+            </div>
+            <div class="card-cat">In the studio</div>
+            <h2 class="card-name">Coming soon</h2>
+            <div class="card-sub">In development</div>
+            <p class="card-tagline">Something useful, on the way.</p>
+            <div class="card-foot">
+              <span class="card-soon">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                Coming soon
+              </span>
+            </div>
+          </article>
+
+          <!-- Card 6 — Coming soon (placeholder) -->
+          <article class="card card-dimmed" style="--g1:#8893A0; --g2:#515861;">
+            <div class="card-head"><span class="card-index">06</span></div>
+            <div class="card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+            </div>
+            <div class="card-cat">In the studio</div>
+            <h2 class="card-name">Coming soon</h2>
+            <div class="card-sub">In development</div>
+            <p class="card-tagline">Crafted with care — soon.</p>
+            <div class="card-foot">
+              <span class="card-soon">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                Coming soon
+              </span>
+            </div>
+          </article>
+
+          <!-- Card 7 — Coming soon (placeholder) -->
+          <article class="card card-dimmed" style="--g1:#998E99; --g2:#565057;">
+            <div class="card-head"><span class="card-index">07</span></div>
+            <div class="card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+            </div>
+            <div class="card-cat">In the studio</div>
+            <h2 class="card-name">Coming soon</h2>
+            <div class="card-sub">In development</div>
+            <p class="card-tagline">Stay tuned for what's next.</p>
+            <div class="card-foot">
+              <span class="card-soon">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                Coming soon
+              </span>
+            </div>
+          </article>
+
         </div>
       </section>
     </div>
@@ -441,12 +541,13 @@
     (function () {
       var carousel = document.getElementById('carousel');
       if (!carousel) return;
+      var track = carousel.querySelector('.track');
       var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      var isDown = false, startX = 0, startScroll = 0, velocity = 0, lastX = 0, lastT = 0, moved = 0, momentumId = null;
+      var isDown = false, startX = 0, startScroll = 0, velocity = 0, lastX = 0, lastT = 0, moved = 0, momentumId = null, paused = false;
       function now() { return performance.now(); }
       function stopMomentum() { if (momentumId) { cancelAnimationFrame(momentumId); momentumId = null; } }
       carousel.addEventListener('pointerdown', function (e) {
-        isDown = true; moved = 0;
+        isDown = true; moved = 0; paused = true;
         startX = e.clientX; startScroll = carousel.scrollLeft;
         lastX = e.clientX; lastT = now(); velocity = 0;
         stopMomentum();
@@ -466,6 +567,7 @@
         if (!isDown) return;
         isDown = false;
         carousel.classList.remove('dragging');
+        paused = false;
         if (reduceMotion) return;
         var v = velocity * 16;
         (function momentum() {
@@ -479,6 +581,39 @@
       carousel.addEventListener('click', function (e) {
         if (moved > 5) { e.preventDefault(); e.stopPropagation(); }
       }, true);
+
+      if (reduceMotion || !track) return; // static padded carousel when motion is reduced
+
+      // ---- seamless auto-scroll marquee (right -> left); pauses on hover/drag ----
+      carousel.addEventListener('pointerenter', function () { paused = true; });
+      carousel.addEventListener('pointerleave', function () { paused = false; });
+      var gap = parseFloat(getComputedStyle(track).columnGap) || 20;
+      var loopWidth = 0;
+      function setup() {
+        var clones = track.querySelectorAll('[data-clone]');
+        for (var k = 0; k < clones.length; k++) track.removeChild(clones[k]);
+        loopWidth = track.scrollWidth + gap;           // one full set + the joining gap
+        var originals = Array.prototype.slice.call(track.children);
+        for (var j = 0; j < originals.length; j++) {
+          var c = originals[j].cloneNode(true);
+          c.setAttribute('data-clone', '1');
+          c.setAttribute('aria-hidden', 'true');
+          var links = c.querySelectorAll('a');
+          for (var m = 0; m < links.length; m++) links[m].setAttribute('tabindex', '-1');
+          track.appendChild(c);
+        }
+      }
+      carousel.classList.add('marquee');
+      setup();
+      var SPEED = 0.5;
+      (function tick() {
+        if (!paused && !isDown) carousel.scrollLeft += SPEED;
+        if (carousel.scrollLeft >= loopWidth) carousel.scrollLeft -= loopWidth;
+        else if (carousel.scrollLeft < 0) carousel.scrollLeft += loopWidth;
+        requestAnimationFrame(tick);
+      })();
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(setup);
+      var rt; window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(setup, 200); });
     })();
 
     /* ============================================================
@@ -702,6 +837,163 @@
         requestAnimationFrame(frame);
       }
       if (document.fonts && document.fonts.load) document.fonts.load('700 100px Outfit').then(start, start); else start();
+    })();
+
+    /* ============================================================
+       HERO TEXT — same liquid + chromatic distortion as the wordmark,
+       overlaid on "Apps" and the tagline (tagline also types in).
+       Desktop only; DOM text stays for mobile / no-JS / reduced motion.
+       ============================================================ */
+    (function () {
+      var DPR = Math.min(window.devicePixelRatio || 1, 2);
+      var VS = 'attribute vec2 p; varying vec2 uv; void main(){ uv=p*0.5+0.5; gl_Position=vec4(p,0.0,1.0); }';
+      var FS = [
+        'precision highp float;',
+        'varying vec2 uv;',
+        'uniform sampler2D tex;',
+        'uniform vec2 res; uniform float time; uniform vec2 mouse; uniform float act; uniform float vel;',
+        'float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1,311.7)))*43758.5453123); }',
+        'float vnoise(vec2 p){ vec2 i=floor(p), f=fract(p); float a=hash(i),b=hash(i+vec2(1.,0.)),c=hash(i+vec2(0.,1.)),d=hash(i+vec2(1.,1.)); vec2 u=f*f*(3.-2.*f); return mix(mix(a,b,u.x),mix(c,d,u.x),u.y); }',
+        'float fbm(vec2 p){ float v=0.,a=.5; for(int i=0;i<4;i++){ v+=a*vnoise(p); p*=2.0; a*=.5; } return v; }',
+        'void main(){',
+        '  float aspect = res.x / res.y;',
+        '  vec2 auv = vec2(uv.x*aspect, uv.y); vec2 am = vec2(mouse.x*aspect, mouse.y);',
+        '  float d = distance(auv, am);',
+        '  float infl = smoothstep(1.2, 0.0, d);',
+        '  float t = time;',
+        '  vec2 q = vec2(fbm(uv*3.2 + vec2(0.0, t*0.4)), fbm(uv*3.2 + vec2(4.7, t*0.34)));',
+        '  vec2 warp = (q - 0.5);',
+        '  float amp = (0.016 + 0.060*vel) * (0.18 + 0.82*infl) * act;',
+        '  float ripple = sin(d*40.0 - t*8.0) * infl * (0.014 + 0.035*vel) * act;',
+        '  vec2 dir = normalize(uv - mouse + 1e-4);',
+        '  vec2 disp = warp*amp + dir*ripple;',
+        '  float ca = (0.005 + 0.016*vel) * (0.20 + 0.80*infl) * act + length(disp)*0.30;',
+        '  vec2 off = dir*ca;',
+        '  float cr = texture2D(tex, uv + disp + off).a;',
+        '  float cg = texture2D(tex, uv + disp).a;',
+        '  float cb = texture2D(tex, uv + disp - off).a;',
+        '  float a = max(cr, max(cg, cb));',
+        '  gl_FragColor = vec4(cr, cg, cb, a);',
+        '}'
+      ].join('\n');
+
+      function makeLiquid(el, opts) {
+        opts = opts || {};
+        if (!el) return;
+        var fullText = el.textContent;
+        var cv = document.createElement('canvas');
+        var gl = null;
+        try { gl = cv.getContext('webgl', { alpha: true, premultipliedAlpha: true, antialias: true }) || cv.getContext('experimental-webgl'); } catch (e) {}
+        if (!gl) return;
+        function sh(tp, src) { var o = gl.createShader(tp); gl.shaderSource(o, src); gl.compileShader(o); if (!gl.getShaderParameter(o, gl.COMPILE_STATUS)) { console.warn('hero', gl.getShaderInfoLog(o)); return null; } return o; }
+        var vs = sh(gl.VERTEX_SHADER, VS), fs = sh(gl.FRAGMENT_SHADER, FS);
+        if (!vs || !fs) return;
+        var prog = gl.createProgram(); gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog);
+        if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return;
+
+        cv.setAttribute('aria-hidden', 'true');
+        cv.style.position = 'absolute';
+        cv.style.pointerEvents = 'none';
+        el.style.position = 'relative';
+        el.appendChild(cv);
+
+        var tex = document.createElement('canvas'), tctx = tex.getContext('2d');
+        gl.useProgram(prog); gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+        var buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]), gl.STATIC_DRAW);
+        var ploc = gl.getAttribLocation(prog, 'p'); gl.enableVertexAttribArray(ploc); gl.vertexAttribPointer(ploc, 2, gl.FLOAT, false, 0, 0);
+        var U = {}; ['tex', 'res', 'time', 'mouse', 'act', 'vel'].forEach(function (n) { U[n] = gl.getUniformLocation(prog, n); });
+        var glTex = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, glTex);
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+
+        var W = 2, H = 2, padPx = 10, fontPx = 16, active = false;
+        var typed = opts.typewriter ? 0 : fullText.length;
+        var caretOn = false;
+        var mx = 0.5, my = 0.5, tgtAct = 0, eAct = 0, tgtVel = 0, eVel = 0, lastCX = 0, lastCY = 0, lastT = 0, t0 = performance.now();
+
+        function paint() {
+          if (!active) return;
+          gl.useProgram(prog);
+          gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
+          gl.uniform2f(U.res, cv.width, cv.height);
+          gl.uniform1f(U.time, (performance.now() - t0) / 1000);
+          gl.uniform2f(U.mouse, mx, 1.0 - my);
+          gl.uniform1f(U.act, eAct); gl.uniform1f(U.vel, eVel);
+          gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, glTex); gl.uniform1i(U.tex, 0);
+          gl.drawArrays(gl.TRIANGLES, 0, 6);
+        }
+        function drawTex() {
+          if (!active) return;
+          var cs = getComputedStyle(el);
+          tctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+          tctx.clearRect(0, 0, W, H);
+          tctx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + fontPx + 'px ' + cs.fontFamily;
+          tctx.textBaseline = 'middle'; tctx.textAlign = 'left'; tctx.fillStyle = '#fff';
+          var s = fullText.slice(0, typed);
+          tctx.fillText(s, padPx, H / 2);
+          if (caretOn) { var w = tctx.measureText(s).width; tctx.fillRect(padPx + w + 2, H / 2 - fontPx * 0.42, Math.max(1.5, fontPx * 0.05), fontPx * 0.84); }
+          gl.bindTexture(gl.TEXTURE_2D, glTex);
+          gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, tex);
+          paint();
+        }
+        function relayout() {
+          var desktop = window.matchMedia('(min-width: 1024px)').matches;
+          if (!desktop) { active = false; cv.style.display = 'none'; el.style.color = ''; return; }
+          active = true; cv.style.display = 'block'; el.style.color = 'transparent';
+          var cs = getComputedStyle(el);
+          fontPx = parseFloat(cs.fontSize) || 16;
+          padPx = Math.max(10, Math.round(fontPx * 0.42));
+          var box = el.getBoundingClientRect();
+          W = Math.max(2, Math.ceil(box.width) + padPx * 2);
+          H = Math.max(2, Math.ceil(box.height) + padPx * 2);
+          cv.style.left = (-padPx) + 'px'; cv.style.top = (-padPx) + 'px'; cv.style.width = W + 'px'; cv.style.height = H + 'px';
+          tex.width = Math.round(W * DPR); tex.height = Math.round(H * DPR);
+          cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR);
+          gl.viewport(0, 0, cv.width, cv.height);
+          drawTex();
+        }
+
+        window.addEventListener('mousemove', function (e) {
+          if (!active) return;
+          var r = cv.getBoundingClientRect();
+          mx = (e.clientX - r.left) / r.width; my = (e.clientY - r.top) / r.height;
+          var near = e.clientX >= r.left - 50 && e.clientX <= r.right + 50 && e.clientY >= r.top - 50 && e.clientY <= r.bottom + 50;
+          tgtAct = near ? 1 : 0;
+          var nt = performance.now();
+          if (lastT) { var dt = nt - lastT; if (dt > 0) { var sp = Math.sqrt((e.clientX - lastCX) * (e.clientX - lastCX) + (e.clientY - lastCY) * (e.clientY - lastCY)) / dt; var nv = Math.min(sp / 1.6, 1); if (nv > tgtVel) tgtVel = nv; } }
+          lastCX = e.clientX; lastCY = e.clientY; lastT = nt;
+        }, { passive: true });
+        document.addEventListener('mouseleave', function () { tgtAct = 0; tgtVel = 0; });
+
+        function frame() {
+          if (active) { eAct += (tgtAct - eAct) * 0.14; eVel += (tgtVel - eVel) * 0.14; tgtVel *= 0.9; paint(); }
+          requestAnimationFrame(frame);
+        }
+        function begin() {
+          relayout();
+          var rt; window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(relayout, 150); });
+          frame();
+          if (opts.typewriter && active) {
+            drawTex();
+            (function tick() {
+              if (!active) { typed = fullText.length; drawTex(); return; }
+              typed++; drawTex();
+              if (typed >= fullText.length) { return; }
+              var jt = fullText[typed - 1], dl = 36 + Math.random() * 26;
+              if (jt === ' ') dl += 22; else if (jt === ',') dl += 180; else if (jt === '.') dl += 260;
+              setTimeout(tick, dl);
+            })();
+          }
+        }
+        if (document.fonts && document.fonts.ready) document.fonts.ready.then(begin); else begin();
+      }
+
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return; // plain DOM text
+      makeLiquid(document.querySelector('.hero-title'), {});
+      var hl = document.querySelector('.hl-text');
+      if (hl) makeLiquid(hl, { typewriter: true });
     })();
   </script>
 </body>
