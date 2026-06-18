@@ -6,7 +6,7 @@
   <title>SanFlorence Digital — Thoughtful iOS apps</title>
   <meta name="description" content="SanFlorence Digital — iOS apps built with care. Mes, DIY Decor AI, and more.">
   <meta property="og:title" content="SanFlorence Digital">
-  <meta property="og:description" content="Thoughtful iOS apps from a studio in the San Francisco Bay Area.">
+  <meta property="og:description" content="Thoughtful apps from a studio in the San Francisco Bay Area.">
   <meta property="og:type" content="website">
   <meta name="theme-color" content="#F7F7F5" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0F0F0F" media="(prefers-color-scheme: dark)">
@@ -34,38 +34,42 @@
       --fg-muted: rgba(10, 10, 10, 0.45);
       --accent: #1B4FFF;
       --border: rgba(10, 10, 10, 0.12);
-      --card-bg: rgba(10, 10, 10, 0.03);
-      --nav-bg: rgba(247, 247, 245, 0.92);
-      --shadow: rgba(0, 0, 0, 0.10);
+      --card-bg: rgba(10, 10, 10, 0.02);
+      --card-bg-hover: rgba(10, 10, 10, 0.04);
+      --nav-bg: rgba(247, 247, 245, 0.85);
+      --shadow: rgba(0, 0, 0, 0.12);
     }
     @media (prefers-color-scheme: dark) {
       :root:not([data-theme="light"]) {
         --bg: #0F0F0F;
         --fg: #F0F0EE;
         --fg-muted: rgba(240, 240, 238, 0.45);
-        --border: rgba(240, 240, 238, 0.12);
-        --card-bg: rgba(240, 240, 238, 0.04);
-        --nav-bg: rgba(15, 15, 15, 0.92);
-        --shadow: rgba(0, 0, 0, 0.40);
+        --border: rgba(240, 240, 238, 0.13);
+        --card-bg: rgba(240, 240, 238, 0.03);
+        --card-bg-hover: rgba(240, 240, 238, 0.06);
+        --nav-bg: rgba(15, 15, 15, 0.85);
+        --shadow: rgba(0, 0, 0, 0.5);
       }
     }
     [data-theme="dark"] {
       --bg: #0F0F0F;
       --fg: #F0F0EE;
       --fg-muted: rgba(240, 240, 238, 0.45);
-      --border: rgba(240, 240, 238, 0.12);
-      --card-bg: rgba(240, 240, 238, 0.04);
-      --nav-bg: rgba(15, 15, 15, 0.92);
-      --shadow: rgba(0, 0, 0, 0.40);
+      --border: rgba(240, 240, 238, 0.13);
+      --card-bg: rgba(240, 240, 238, 0.03);
+      --card-bg-hover: rgba(240, 240, 238, 0.06);
+      --nav-bg: rgba(15, 15, 15, 0.85);
+      --shadow: rgba(0, 0, 0, 0.5);
     }
     [data-theme="light"] {
       --bg: #F7F7F5;
       --fg: #0A0A0A;
       --fg-muted: rgba(10, 10, 10, 0.45);
       --border: rgba(10, 10, 10, 0.12);
-      --card-bg: rgba(10, 10, 10, 0.03);
-      --nav-bg: rgba(247, 247, 245, 0.92);
-      --shadow: rgba(0, 0, 0, 0.10);
+      --card-bg: rgba(10, 10, 10, 0.02);
+      --card-bg-hover: rgba(10, 10, 10, 0.04);
+      --nav-bg: rgba(247, 247, 245, 0.85);
+      --shadow: rgba(0, 0, 0, 0.12);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -75,85 +79,91 @@
       color: var(--fg);
       font-family: 'Outfit', sans-serif;
       font-weight: 400;
-      transition: background 0.3s, color 0.3s;
+      transition: background 0.4s ease, color 0.4s ease;
       -webkit-font-smoothing: antialiased;
       text-rendering: optimizeLegibility;
     }
 
-    /* ---- Home: lock to one non-scrolling viewport ---- */
+    /* ---- Home: one non-scrolling viewport ---- */
     body.home {
       height: 100vh;
       height: 100dvh;
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      padding-top: 56px;
+      padding-top: 60px;
     }
 
     /* ---- NAV (shared) ---- */
     .nav {
       position: fixed;
       top: 0; left: 0; right: 0;
-      height: 56px;
+      height: 60px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 40px;
+      padding: 0 clamp(20px, 4vw, 48px);
       z-index: 100;
       background: var(--nav-bg);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: saturate(180%) blur(14px);
+      -webkit-backdrop-filter: saturate(180%) blur(14px);
       border-bottom: 1px solid var(--border);
     }
     .nav-brand {
-      display: flex; align-items: center; gap: 8px;
+      display: flex; align-items: center; gap: 9px;
       text-decoration: none; color: var(--fg);
-      font-size: 12px; letter-spacing: 0.04em; font-weight: 600;
+      font-size: 13px; letter-spacing: 0.02em; font-weight: 600;
     }
-    .diamond { color: var(--accent); font-size: 9px; line-height: 1; }
-    .nav-right { display: flex; align-items: center; gap: 24px; }
+    .diamond { color: var(--accent); font-size: 10px; line-height: 1; transform: translateY(-1px); }
+    .nav-right { display: flex; align-items: center; gap: clamp(16px, 2vw, 28px); }
     .nav-link {
-      font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em;
+      position: relative;
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em;
       color: var(--fg-muted); text-decoration: none; font-weight: 500;
-      transition: color 0.2s;
+      transition: color 0.25s ease;
+      padding: 4px 0;
+    }
+    .nav-link::after {
+      content: ''; position: absolute; left: 0; bottom: 0;
+      width: 100%; height: 1px; background: currentColor;
+      transform: scaleX(0); transform-origin: right;
+      transition: transform 0.3s ease;
     }
     .nav-link:hover { color: var(--fg); }
+    .nav-link:hover::after, .nav-link.active::after { transform: scaleX(1); transform-origin: left; }
+    .nav-link.active { color: var(--fg); }
     .theme-toggle {
       background: none; border: none; color: var(--fg-muted);
       cursor: pointer; padding: 4px; display: inline-flex; align-items: center;
-      transition: color 0.2s;
+      transition: color 0.25s ease, transform 0.4s ease;
     }
-    .theme-toggle:hover { color: var(--fg); }
+    .theme-toggle:hover { color: var(--fg); transform: rotate(15deg); }
     .theme-toggle svg { display: block; }
 
     /* ---- Home main column ---- */
-    .home-main {
-      flex: 1 1 auto;
-      min-height: 0;
-      display: flex;
-      flex-direction: column;
-    }
+    .home-main { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
 
-    /* ---- Hero (minimal: big "Apps" left, one line right) ---- */
+    /* ---- Hero ---- */
     .hero {
       flex: 0 0 auto;
       display: flex;
-      align-items: baseline;
+      align-items: flex-end;
       justify-content: space-between;
-      gap: 40px;
-      padding: clamp(20px, 4vh, 48px) 40px clamp(8px, 2vh, 20px);
+      gap: clamp(24px, 5vw, 72px);
+      padding: clamp(18px, 4vh, 46px) clamp(20px, 4vw, 48px) clamp(8px, 1.6vh, 18px);
     }
     .hero-title {
       font-weight: 600;
-      font-size: clamp(2.75rem, 7vw, 6rem);
-      line-height: 0.95;
-      letter-spacing: -0.02em;
+      font-size: clamp(3rem, 8vw, 7rem);
+      line-height: 0.9;
+      letter-spacing: -0.03em;
     }
     .hero-line {
-      font-size: clamp(13px, 1vw, 15px);
-      line-height: 1.55;
-      color: var(--fg-muted);
-      max-width: 34ch;
+      font-size: clamp(16px, 1.9vw, 26px);
+      line-height: 1.35;
+      font-weight: 400;
+      color: var(--fg);
+      max-width: 18ch;
       text-align: right;
       flex-shrink: 1;
     }
@@ -164,98 +174,115 @@
       width: 100%;
       overflow-x: auto;
       overflow-y: hidden;
-      padding: 8px 0 8px 40px;
+      padding: 10px clamp(20px, 4vw, 48px);
       cursor: grab;
       scrollbar-width: none;
       -ms-overflow-style: none;
     }
     .carousel::-webkit-scrollbar { display: none; }
     .carousel.dragging { cursor: grabbing; }
-    .track { display: flex; width: max-content; }
+    .track { display: flex; gap: clamp(16px, 1.6vw, 22px); width: max-content; }
     .card {
-      width: clamp(260px, 22vw, 320px);
-      height: clamp(280px, 40vh, 380px);
+      position: relative;
+      width: clamp(255px, 23vw, 320px);
+      height: clamp(290px, 42vh, 380px);
       flex-shrink: 0;
       border: 1px solid var(--border);
-      border-radius: 16px;
+      border-radius: 22px;
       background: var(--card-bg);
-      padding: clamp(22px, 2.6vh, 30px);
-      margin-right: 20px;
+      padding: clamp(22px, 2.8vh, 30px);
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      transition: transform 300ms ease, box-shadow 300ms ease;
+      overflow: hidden;
+      transition: transform 0.45s cubic-bezier(.2,.7,.2,1), box-shadow 0.45s ease, background 0.3s ease, border-color 0.3s ease;
       user-select: none;
       -webkit-user-select: none;
     }
-    .card:hover { transform: translateY(-8px); box-shadow: 0 24px 48px var(--shadow); }
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 30px 60px -20px var(--shadow);
+      background: var(--card-bg-hover);
+      border-color: color-mix(in srgb, var(--fg) 22%, transparent);
+    }
+    .card-head { display: flex; align-items: center; justify-content: space-between; }
+    .card-index { font-size: 12px; font-weight: 600; letter-spacing: 0.05em; color: var(--fg-muted); font-variant-numeric: tabular-nums; }
+    .card-arrow {
+      color: var(--fg-muted);
+      opacity: 0; transform: translate(-5px, 5px);
+      transition: opacity 0.4s ease, transform 0.4s ease, color 0.3s ease;
+      display: inline-flex;
+    }
+    .card:hover .card-arrow { opacity: 1; transform: translate(0, 0); color: var(--fg); }
     .card-icon {
-      width: clamp(52px, 6vh, 64px);
-      height: clamp(52px, 6vh, 64px);
-      border-radius: 16px;
-      margin-bottom: clamp(14px, 2vh, 22px);
-      overflow: hidden;
+      width: clamp(56px, 7.4vh, 74px);
+      height: clamp(56px, 7.4vh, 74px);
+      border-radius: 27%;
+      margin: clamp(16px, 2.4vh, 24px) 0 auto;
+      display: grid; place-items: center;
+      color: #fff;
+      background: linear-gradient(145deg, var(--g1, #888), var(--g2, #555));
+      box-shadow: inset 0 1.5px 1px rgba(255,255,255,0.4), inset 0 -2px 3px rgba(0,0,0,0.15), 0 10px 22px -8px rgba(0,0,0,0.45);
+      transition: transform 0.45s cubic-bezier(.2,.7,.2,1);
     }
-    .card-icon img { width: 100%; height: 100%; object-fit: cover; }
-    .card-name { font-weight: 600; font-size: clamp(22px, 2.6vh, 27px); line-height: 1.05; letter-spacing: -0.01em; }
-    .card-subtitle { font-size: 12px; color: var(--fg-muted); margin-top: 4px; font-weight: 400; }
-    .card-tagline { font-size: 13px; line-height: 1.55; color: var(--fg-muted); margin-top: 12px; }
-    .card-bottom { display: flex; flex-direction: column; align-items: flex-start; }
-    .card-badge {
-      font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em;
-      border: 1px solid var(--border); border-radius: 99px; padding: 4px 10px;
-      display: inline-block; color: var(--fg-muted);
-    }
-    .card-store { display: inline-block; margin-top: 12px; }
+    .card:hover .card-icon { transform: scale(1.06) rotate(-2deg); }
+    .card-icon svg { width: 48%; height: 48%; }
+    .card-cat { font-size: 10px; text-transform: uppercase; letter-spacing: 0.16em; color: var(--fg-muted); margin-bottom: 8px; }
+    .card-name { font-weight: 600; font-size: clamp(22px, 2.8vh, 28px); line-height: 1.05; letter-spacing: -0.01em; }
+    .card-sub { font-size: 12px; color: var(--fg-muted); margin-top: 3px; }
+    .card-tagline { font-size: 13px; line-height: 1.5; color: var(--fg-muted); margin-top: 10px; }
+    .card-foot { margin-top: clamp(14px, 2vh, 20px); }
+    .card-store { display: inline-block; }
     .card-store img { display: block; height: 38px; width: auto; }
-    .card-locked .lock { margin-top: 12px; color: var(--fg-muted); display: inline-flex; }
-    .card-dimmed { opacity: 0.4; }
-    .card-dimmed:hover { transform: none; box-shadow: none; }
+    .card-soon { font-size: 11px; text-transform: uppercase; letter-spacing: 0.16em; color: var(--fg-muted); display: inline-flex; align-items: center; gap: 8px; }
+    .card-dimmed { opacity: 0.55; }
+    .card-dimmed:hover { transform: translateY(-4px); }
+    .card-dimmed:hover .card-icon { transform: none; }
 
-    /* ---- Giant SanFlorence wordmark ---- */
-    .wordmark {
-      flex: 0 0 auto;
-      width: 100%;
-      overflow: hidden;
-      position: relative;
-    }
-    .glitch { display: block; width: 100%; }
-    .glitch-text {
-      font-family: 'Outfit', sans-serif;
-      font-weight: 700;
-      font-size: 15vw;
-      fill: var(--fg);
-      transition: fill 0.3s;
-    }
+    /* ---- Giant SanFlorence wordmark (WebGL canvas) ---- */
+    .wordmark { flex: 0 0 auto; width: 100%; overflow: hidden; position: relative; }
+    #wm { display: block; width: 100%; height: auto; }
 
-    /* ---- Thin footer ---- */
+    /* ---- FOOTER (shared) ---- */
     .footer {
       flex: 0 0 auto;
-      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-      padding: 12px 40px 16px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 8px 24px; flex-wrap: wrap;
+      padding: clamp(12px, 1.8vh, 18px) clamp(20px, 4vw, 48px);
       font-size: 11px; color: var(--fg-muted);
     }
-    .footer a { color: inherit; text-decoration: none; }
-    .footer a:hover { text-decoration: underline; }
-    .footer .dot { opacity: 0.5; }
+    .footer-copy { letter-spacing: 0.01em; }
+    .footer-links { display: flex; gap: clamp(16px, 1.6vw, 22px); }
+    .footer a { color: inherit; text-decoration: none; transition: color 0.2s ease; }
+    .footer a:hover { color: var(--fg); }
 
     /* ---- Responsive ---- */
+    @media (max-width: 900px) {
+      .hero-line { max-width: 16ch; }
+    }
     @media (max-width: 768px) {
-      .nav { padding: 0 20px; }
-      .nav-right { gap: 16px; }
       .nav-brand .brand-text { display: none; }
-      .nav-link.legal-link { display: none; }
-      .hero { padding: 20px 20px 8px; gap: 20px; }
-      .hero-line { font-size: 12px; max-width: 22ch; }
-      .carousel { padding-left: 20px; }
-      .glitch-text { font-size: 17vw; }
-      .footer { padding: 10px 20px 14px; }
+      .hero {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 18px 20px 6px;
+      }
+      .hero-line { text-align: left; max-width: 30ch; font-size: clamp(15px, 4.4vw, 19px); }
+      .footer { justify-content: flex-start; }
+    }
+    @media (max-width: 480px) {
+      .nav-right { gap: 14px; }
+      .nav-link { letter-spacing: 0.1em; }
+    }
+    @media (max-height: 620px) {
+      .card { height: clamp(240px, 64vh, 300px); }
+      .card-tagline { display: none; }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .card { transition: none; }
-      .card:hover { transform: none; box-shadow: 0 12px 24px var(--shadow); }
-      .glitch-text { transition: none; }
+      .card, .card-icon, .card-arrow, .theme-toggle { transition: none; }
+      .card:hover { transform: none; box-shadow: 0 14px 28px -16px var(--shadow); }
+      .card:hover .card-icon { transform: none; }
     }
   </style>
 </head>
@@ -268,8 +295,9 @@
       <span class="brand-text">SanFlorence Digital</span>
     </a>
     <div class="nav-right">
-      <a class="nav-link legal-link" href="terms.html">Terms</a>
-      <a class="nav-link legal-link" href="privacy.html">Privacy</a>
+      <a class="nav-link" href="terms.html">Terms</a>
+      <a class="nav-link" href="privacy.html">Privacy</a>
+      <a class="nav-link" href="mailto:arifin.yeasin@gmail.com">Contact</a>
       <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle dark mode"></button>
     </div>
   </nav>
@@ -279,7 +307,7 @@
     <!-- ===================== HERO ===================== -->
     <header class="hero">
       <h1 class="hero-title">Apps</h1>
-      <p class="hero-line">Thoughtful iOS tools, crafted in the San Francisco Bay Area.</p>
+      <p class="hero-line">Thoughtful apps, crafted with love in the SF Bay Area.</p>
     </header>
 
     <!-- ===================== CARDS ===================== -->
@@ -288,17 +316,24 @@
         <div class="track">
 
           <!-- Card 1 — Mes -->
-          <article class="card">
-            <div class="card-top">
-              <div class="card-icon" style="background: linear-gradient(135deg, #1B4FFF, #0030CC);">
-                <!-- TODO: replace with <img src="assets/icons/mes-icon.png" alt="Mes app icon"> -->
-              </div>
-              <h2 class="card-name">Mes</h2>
-              <div class="card-subtitle">AI Tools for iMessage</div>
-              <p class="card-tagline">AI-powered replies, tones, and tools — right inside iMessage.</p>
+          <article class="card" style="--g1:#2E6BFF; --g2:#0026B8;">
+            <div class="card-head">
+              <span class="card-index">01</span>
+              <span class="card-arrow" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>
+              </span>
             </div>
-            <div class="card-bottom">
-              <span class="card-badge">Productivity · iOS</span>
+            <div class="card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 11.5a8.5 8.5 0 0 1-12.6 7.5L3.5 20.5l1.5-4.9A8.5 8.5 0 1 1 21 11.5Z"/>
+                <path d="m12 7 .85 2.15L15 10l-2.15.85L12 13l-.85-2.15L9 10l2.15-.85Z"/>
+              </svg>
+            </div>
+            <div class="card-cat">Productivity · iOS</div>
+            <h2 class="card-name">Mes</h2>
+            <div class="card-sub">AI Tools for iMessage</div>
+            <p class="card-tagline">AI-powered replies, tones, and tools — right inside iMessage.</p>
+            <div class="card-foot">
               <!-- TODO: replace [MES_APP_ID] with the real App Store ID -->
               <a class="card-store" href="https://apps.apple.com/app/id[MES_APP_ID]" target="_blank" rel="noopener">
                 <img src="assets/badge-appstore.svg" alt="Download Mes on the App Store">
@@ -307,17 +342,26 @@
           </article>
 
           <!-- Card 2 — DIY Decor AI -->
-          <article class="card">
-            <div class="card-top">
-              <div class="card-icon" style="background: linear-gradient(135deg, #FF6B35, #E8430A);">
-                <!-- TODO: replace with <img src="assets/icons/diydecor-icon.png" alt="DIY Decor AI app icon"> -->
-              </div>
-              <h2 class="card-name">DIY Decor AI</h2>
-              <div class="card-subtitle">Room Redesign with AI</div>
-              <p class="card-tagline">Redesign any room instantly. Point, shoot, transform.</p>
+          <article class="card" style="--g1:#FF7A3D; --g2:#D7330A;">
+            <div class="card-head">
+              <span class="card-index">02</span>
+              <span class="card-arrow" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>
+              </span>
             </div>
-            <div class="card-bottom">
-              <span class="card-badge">Lifestyle · iOS</span>
+            <div class="card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4.5" width="18" height="15" rx="2.5"/>
+                <circle cx="8.5" cy="9.5" r="1.6"/>
+                <path d="M21 15.5 16 10.5 6.5 20"/>
+                <path d="m17.5 3 .6 1.5 1.5.6-1.5.6-.6 1.5-.6-1.5L15.4 5l1.5-.6Z"/>
+              </svg>
+            </div>
+            <div class="card-cat">Lifestyle · iOS</div>
+            <h2 class="card-name">DIY Decor AI</h2>
+            <div class="card-sub">Room Redesign with AI</div>
+            <p class="card-tagline">Redesign any room instantly. Point, shoot, transform.</p>
+            <div class="card-foot">
               <!-- TODO: replace [DIYDECOR_APP_ID] with the real App Store ID -->
               <a class="card-store" href="https://apps.apple.com/app/id[DIYDECOR_APP_ID]" target="_blank" rel="noopener">
                 <img src="assets/badge-appstore.svg" alt="Download DIY Decor AI on the App Store">
@@ -326,19 +370,24 @@
           </article>
 
           <!-- Card 3 — Coming soon -->
-          <article class="card card-dimmed card-locked">
-            <div class="card-top">
-              <div class="card-icon" style="background: linear-gradient(135deg, rgba(120,120,120,0.5), rgba(80,80,80,0.5));"></div>
-              <h2 class="card-name">Something new.</h2>
-              <p class="card-tagline">A new app from SanFlorence — arriving 2026.</p>
+          <article class="card card-dimmed" style="--g1:#8A8A8A; --g2:#4A4A4A;">
+            <div class="card-head">
+              <span class="card-index">03</span>
             </div>
-            <div class="card-bottom">
-              <span class="card-badge">Coming soon</span>
-              <span class="lock" aria-hidden="true">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                  <rect x="5" y="11" width="14" height="9" rx="2"></rect>
-                  <path d="M8 11V7a4 4 0 0 1 8 0v4"></path>
-                </svg>
+            <div class="card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="5" y="11" width="14" height="9" rx="2"/>
+                <path d="M8 11V7a4 4 0 0 1 8 0v4"/>
+              </svg>
+            </div>
+            <div class="card-cat">In the studio</div>
+            <h2 class="card-name">Something new.</h2>
+            <div class="card-sub">A new app from SanFlorence</div>
+            <p class="card-tagline">Quietly in the works — arriving 2026.</p>
+            <div class="card-foot">
+              <span class="card-soon">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                Coming soon
               </span>
             </div>
           </article>
@@ -349,16 +398,17 @@
 
     <!-- ===================== GIANT WORDMARK ===================== -->
     <section class="wordmark">
-      <svg id="glitch" class="glitch" width="100%" xmlns="http://www.w3.org/2000/svg" aria-label="SanFlorence" role="img"></svg>
+      <canvas id="wm" aria-label="SanFlorence" role="img"></canvas>
     </section>
 
     <!-- ===================== FOOTER ===================== -->
-    <footer class="footer" id="footer">
-      <span>© 2026 SanFlorence Digital LLC</span>
-      <span class="dot">·</span>
-      <a href="terms.html">Terms of Use</a>
-      <span class="dot">·</span>
-      <a href="privacy.html">Privacy Policy</a>
+    <footer class="footer">
+      <span class="footer-copy">© 2026 SanFlorence Digital LLC</span>
+      <nav class="footer-links" aria-label="Footer">
+        <a href="terms.html">Terms of Use</a>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="mailto:arifin.yeasin@gmail.com">Contact</a>
+      </nav>
     </footer>
 
   </div>
@@ -395,17 +445,15 @@
     })();
 
     /* ============================================================
-       CAROUSEL — drag + momentum (no auto-advance; one-screen home)
+       CAROUSEL — drag + momentum
        ============================================================ */
     (function () {
       var carousel = document.getElementById('carousel');
       if (!carousel) return;
       var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       var isDown = false, startX = 0, startScroll = 0, velocity = 0, lastX = 0, lastT = 0, moved = 0, momentumId = null;
-
       function now() { return performance.now(); }
       function stopMomentum() { if (momentumId) { cancelAnimationFrame(momentumId); momentumId = null; } }
-
       carousel.addEventListener('pointerdown', function (e) {
         isDown = true; moved = 0;
         startX = e.clientX; startScroll = carousel.scrollLeft;
@@ -443,140 +491,195 @@
     })();
 
     /* ============================================================
-       WORDMARK — velocity-driven horizontal liquid smear
-       Crisp at rest; smears in the cursor's wake; settles back.
+       WORDMARK — WebGL liquid-metal distortion
+       Flow + cursor ripples + chromatic aberration. Colours are read
+       live each frame, so the wordmark always matches the page theme.
        ============================================================ */
     (function () {
-      var svg = document.getElementById('glitch');
-      if (!svg) return;
-      var NS = 'http://www.w3.org/2000/svg';
+      var canvas = document.getElementById('wm');
+      if (!canvas) return;
       var WORD = 'SanFlorence';
-      var letters = WORD.split('');
       var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var DPR = Math.min(window.devicePixelRatio || 1, 2);
+      var bodyCS = getComputedStyle(document.body);
 
-      // One displacement filter per letter. baseFrequency is anisotropic
-      // (big horizontal waves, finer vertical variation) so displacing in X
-      // produces the chevron/echo smear. Only the SCALE is animated.
-      var defs = document.createElementNS(NS, 'defs');
-      var disps = [];
-      letters.forEach(function (ch, i) {
-        var filter = document.createElementNS(NS, 'filter');
-        filter.setAttribute('id', 'gl-' + i);
-        filter.setAttribute('x', '-60%'); filter.setAttribute('y', '-40%');
-        filter.setAttribute('width', '220%'); filter.setAttribute('height', '180%');
+      var tex = document.createElement('canvas');
+      var tx = tex.getContext('2d');
+      var cssW = 0, cssH = 0, fontPx = 0;
 
-        var turb = document.createElementNS(NS, 'feTurbulence');
-        turb.setAttribute('type', 'turbulence');
-        turb.setAttribute('baseFrequency', '0.009 0.038');
-        turb.setAttribute('numOctaves', '2');
-        turb.setAttribute('seed', String(i * 7 + 3));
-        turb.setAttribute('stitchTiles', 'stitch');
-        turb.setAttribute('result', 'noise');
-
-        var disp = document.createElementNS(NS, 'feDisplacementMap');
-        disp.setAttribute('in', 'SourceGraphic');
-        disp.setAttribute('in2', 'noise');
-        disp.setAttribute('scale', '0');
-        disp.setAttribute('xChannelSelector', 'R');
-        disp.setAttribute('yChannelSelector', 'G');
-
-        filter.appendChild(turb);
-        filter.appendChild(disp);
-        defs.appendChild(filter);
-        disps.push(disp);
-      });
-      svg.appendChild(defs);
-
-      var text = document.createElementNS(NS, 'text');
-      text.setAttribute('text-anchor', 'middle');
-      text.setAttribute('class', 'glitch-text');
-      var tspans = letters.map(function (ch, i) {
-        var t = document.createElementNS(NS, 'tspan');
-        t.setAttribute('filter', 'url(#gl-' + i + ')');
-        t.textContent = ch;
-        text.appendChild(t);
-        return t;
-      });
-      svg.appendChild(text);
-
-      function layout() {
-        var w = svg.clientWidth || window.innerWidth;
-        text.setAttribute('letter-spacing', '0');
-        text.setAttribute('x', w / 2);
-        text.setAttribute('y', 0);
-        var natural = 0;
-        try { natural = text.getComputedTextLength(); } catch (e) { natural = w * 0.8; }
-        var targetW = w * 0.97;
-        var ls = letters.length > 1 ? (targetW - natural) / (letters.length - 1) : 0;
-        var minLs = -0.06 * (natural / letters.length);
-        if (ls < minLs) ls = minLs;
-        text.setAttribute('letter-spacing', String(ls));
-        var bb;
-        try { bb = text.getBBox(); } catch (e) { bb = { height: w * 0.16 }; }
-        var h = bb.height * 1.04;
-        svg.setAttribute('height', h);
-        svg.style.height = h + 'px';
-        text.setAttribute('y', h / 2);
-        text.setAttribute('dominant-baseline', 'middle');
-      }
-      layout();
-      var rt;
-      window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(function () { layout(); kick(); }, 150); });
-
-      if (reduceMotion) return; // scale stays 0 → always crisp
-
-      var MAXD = 260;       // px radius of cursor influence
-      var SCALE_MAX = 115;  // peak horizontal displacement
-      var SPEED_MAX = 1.5;  // px/ms mapping to full-strength smear
-      var current = letters.map(function () { return 0; });
-      var mouseX = -99999, mouseY = -99999, active = false, running = false;
-      var lastX = 0, lastY = 0, lastT = 0, speed = 0;
-
-      function kick() { if (!running) { running = true; requestAnimationFrame(frame); } }
-
-      function frame() {
-        var busy = false;
-        speed *= 0.86; // decay → smear settles when the cursor stops
-        var speedNorm = speed / SPEED_MAX; if (speedNorm > 1) speedNorm = 1;
-        for (var i = 0; i < tspans.length; i++) {
-          var target = 0;
-          if (active) {
-            var r = tspans[i].getBoundingClientRect();
-            var cx = r.left + r.width / 2, cy = r.top + r.height / 2;
-            var dx = mouseX - cx, dy = mouseY - cy;
-            var dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist < MAXD) target = (1 - dist / MAXD) * speedNorm;
-          }
-          var lerp = target > current[i] ? 0.28 : 0.07; // snap toward, drift back (trail)
-          var next = current[i] + (target - current[i]) * lerp;
-          if (next < 0.001 && target === 0) next = 0;
-          if (Math.abs(next - current[i]) > 0.0008 || (next === 0 && current[i] !== 0)) {
-            current[i] = next;
-            disps[i].setAttribute('scale', (next * SCALE_MAX).toFixed(2));
-          } else {
-            current[i] = next;
-          }
-          if (next > 0.001 || target > 0) busy = true;
-        }
-        if (active || busy || speed > 0.02) requestAnimationFrame(frame);
-        else running = false;
+      function parseRGB(s) {
+        var m = (s || '').match(/(\d+(?:\.\d+)?)/g);
+        if (!m) return [0, 0, 0];
+        return [(+m[0]) / 255, (+m[1]) / 255, (+m[2]) / 255];
       }
 
-      window.addEventListener('mousemove', function (e) {
-        var t = performance.now();
-        if (lastT) {
-          var dt = t - lastT;
-          if (dt > 0) {
-            var dx = e.clientX - lastX, dy = e.clientY - lastY;
-            var inst = Math.sqrt(dx * dx + dy * dy) / dt;
-            if (inst > speed) speed = inst; // capture peak; frame loop decays it
-          }
+      function buildText() {
+        cssW = canvas.clientWidth || window.innerWidth;
+        tx.setTransform(1, 0, 0, 1, 0, 0);
+        tx.font = '700 100px Outfit, sans-serif';
+        var w100 = tx.measureText(WORD).width || cssW * 0.5;
+        fontPx = (cssW * 0.95 / w100) * 100;
+        cssH = Math.max(40, Math.round(fontPx * 1.04));
+        tex.width = Math.round(cssW * DPR);
+        tex.height = Math.round(cssH * DPR);
+        tx.setTransform(DPR, 0, 0, DPR, 0, 0);
+        tx.clearRect(0, 0, cssW, cssH);
+        tx.font = '700 ' + fontPx + 'px Outfit, sans-serif';
+        tx.textAlign = 'center';
+        tx.textBaseline = 'middle';
+        tx.fillStyle = '#fff';
+        tx.fillText(WORD, cssW / 2, cssH / 2 + fontPx * 0.04);
+        canvas.style.height = cssH + 'px';
+        canvas.width = Math.round(cssW * DPR);
+        canvas.height = Math.round(cssH * DPR);
+      }
+
+      function fallback2D() {
+        var c2 = canvas.getContext('2d');
+        function draw() {
+          buildText();
+          var col = parseRGB(bodyCS.color);
+          c2.setTransform(1, 0, 0, 1, 0, 0);
+          c2.clearRect(0, 0, canvas.width, canvas.height);
+          c2.setTransform(DPR, 0, 0, DPR, 0, 0);
+          c2.font = '700 ' + fontPx + 'px Outfit, sans-serif';
+          c2.textAlign = 'center';
+          c2.textBaseline = 'middle';
+          c2.fillStyle = 'rgb(' + col.map(function (v) { return Math.round(v * 255); }).join(',') + ')';
+          c2.fillText(WORD, cssW / 2, cssH / 2 + fontPx * 0.04);
         }
-        lastX = e.clientX; lastY = e.clientY; lastT = t;
-        mouseX = e.clientX; mouseY = e.clientY; active = true; kick();
-      }, { passive: true });
-      document.addEventListener('mouseleave', function () { active = false; kick(); });
-      window.addEventListener('blur', function () { active = false; kick(); });
+        if (document.fonts && document.fonts.load) document.fonts.load('700 100px Outfit').then(draw, draw); else draw();
+        var rt; window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(draw, 150); });
+        new MutationObserver(draw).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+        if (window.matchMedia) { var mq = window.matchMedia('(prefers-color-scheme: dark)'); (mq.addEventListener ? mq.addEventListener.bind(mq, 'change') : mq.addListener.bind(mq))(draw); }
+      }
+
+      var gl = null;
+      try { gl = canvas.getContext('webgl', { alpha: false, antialias: true, premultipliedAlpha: false }) || canvas.getContext('experimental-webgl'); } catch (e) {}
+      if (!gl || reduceMotion) { fallback2D(); return; }
+
+      var VS = 'attribute vec2 p; varying vec2 uv; void main(){ uv = p*0.5+0.5; gl_Position = vec4(p,0.0,1.0); }';
+      var FS = [
+        'precision highp float;',
+        'varying vec2 uv;',
+        'uniform sampler2D tex;',
+        'uniform vec2 res;',
+        'uniform float time;',
+        'uniform vec2 mouse;',
+        'uniform float act;',
+        'uniform float vel;',
+        'uniform vec3 fg;',
+        'uniform vec3 bg;',
+        'float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1,311.7)))*43758.5453123); }',
+        'float vnoise(vec2 p){ vec2 i=floor(p), f=fract(p); float a=hash(i),b=hash(i+vec2(1.,0.)),c=hash(i+vec2(0.,1.)),d=hash(i+vec2(1.,1.)); vec2 u=f*f*(3.-2.*f); return mix(mix(a,b,u.x),mix(c,d,u.x),u.y); }',
+        'float fbm(vec2 p){ float v=0.,a=.5; for(int i=0;i<4;i++){ v+=a*vnoise(p); p*=2.0; a*=.5; } return v; }',
+        'void main(){',
+        '  float aspect = res.x / res.y;',
+        '  vec2 auv = vec2(uv.x*aspect, uv.y);',
+        '  vec2 am = vec2(mouse.x*aspect, mouse.y);',
+        '  float d = distance(auv, am);',
+        '  float infl = smoothstep(0.75, 0.0, d);',
+        '  float t = time;',
+        '  vec2 q = vec2(fbm(uv*3.0 + vec2(0.0, t*0.25)), fbm(uv*3.0 + vec2(4.7, t*0.21)));',
+        '  vec2 warp = (q - 0.5);',
+        '  float amp = (0.004 + 0.055*vel) * (0.10 + 0.90*infl) * act;',
+        '  float ripple = sin(d*38.0 - t*7.0) * infl * (0.003 + 0.03*vel) * act;',
+        '  vec2 dir = normalize(uv - mouse + 1e-4);',
+        '  vec2 disp = warp*amp + dir*ripple;',
+        '  float ca = (0.0010 + 0.013*vel) * (0.15 + 0.85*infl) * act + length(disp)*0.20;',
+        '  vec2 off = dir*ca;',
+        '  float cr = texture2D(tex, uv + disp + off).a;',
+        '  float cg = texture2D(tex, uv + disp).a;',
+        '  float cb = texture2D(tex, uv + disp - off).a;',
+        '  vec3 col = vec3(mix(bg.r,fg.r,cr), mix(bg.g,fg.g,cg), mix(bg.b,fg.b,cb));',
+        '  gl_FragColor = vec4(col, 1.0);',
+        '}'
+      ].join('\n');
+
+      function sh(type, src) {
+        var s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s);
+        if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) { console.warn('wm shader:', gl.getShaderInfoLog(s)); return null; }
+        return s;
+      }
+      var vs = sh(gl.VERTEX_SHADER, VS), fs = sh(gl.FRAGMENT_SHADER, FS);
+      if (!vs || !fs) { fallback2D(); return; }
+      var prog = gl.createProgram();
+      gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog);
+      if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) { console.warn('wm link:', gl.getProgramInfoLog(prog)); fallback2D(); return; }
+      gl.useProgram(prog);
+
+      var buf = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]), gl.STATIC_DRAW);
+      var ploc = gl.getAttribLocation(prog, 'p');
+      gl.enableVertexAttribArray(ploc);
+      gl.vertexAttribPointer(ploc, 2, gl.FLOAT, false, 0, 0);
+
+      var U = {};
+      ['tex', 'res', 'time', 'mouse', 'act', 'vel', 'fg', 'bg'].forEach(function (n) { U[n] = gl.getUniformLocation(prog, n); });
+
+      var glTex = gl.createTexture();
+      gl.bindTexture(gl.TEXTURE_2D, glTex);
+      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+
+      function uploadTexture() { gl.bindTexture(gl.TEXTURE_2D, glTex); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, tex); }
+      function resize() { buildText(); gl.viewport(0, 0, canvas.width, canvas.height); uploadTexture(); }
+
+      function start() {
+        resize();
+        var rt;
+        window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(resize, 150); });
+
+        var mx = 0.5, my = 0.5, tgtAct = 0, act = 0, tgtVel = 0, vel = 0;
+        var lastCX = 0, lastCY = 0, lastT = 0, t0 = performance.now();
+
+        window.addEventListener('mousemove', function (e) {
+          var r = canvas.getBoundingClientRect();
+          mx = (e.clientX - r.left) / r.width;
+          my = (e.clientY - r.top) / r.height;
+          var near = e.clientX >= r.left - 140 && e.clientX <= r.right + 140 &&
+                     e.clientY >= r.top - 240 && e.clientY <= r.bottom + 160;
+          tgtAct = near ? 1 : 0;
+          var nt = performance.now();
+          if (lastT) { var dt = nt - lastT; if (dt > 0) { var sp = Math.sqrt((e.clientX - lastCX) * (e.clientX - lastCX) + (e.clientY - lastCY) * (e.clientY - lastCY)) / dt; var nv = Math.min(sp / 1.6, 1); if (nv > tgtVel) tgtVel = nv; } }
+          lastCX = e.clientX; lastCY = e.clientY; lastT = nt;
+        }, { passive: true });
+        document.addEventListener('mouseleave', function () { tgtAct = 0; tgtVel = 0; });
+        window.addEventListener('blur', function () { tgtAct = 0; tgtVel = 0; });
+
+        function frame() {
+          act += (tgtAct - act) * 0.08;
+          vel += (tgtVel - vel) * 0.12;
+          tgtVel *= 0.90;
+          var time = (performance.now() - t0) / 1000;
+          var fg = parseRGB(bodyCS.color);   // live: tracks theme + transition
+          var bg = parseRGB(bodyCS.backgroundColor);
+          gl.useProgram(prog);
+          gl.uniform2f(U.res, canvas.width, canvas.height);
+          gl.uniform1f(U.time, time);
+          gl.uniform2f(U.mouse, mx, 1.0 - my);
+          gl.uniform1f(U.act, act);
+          gl.uniform1f(U.vel, vel);
+          gl.uniform3f(U.fg, fg[0], fg[1], fg[2]);
+          gl.uniform3f(U.bg, bg[0], bg[1], bg[2]);
+          gl.activeTexture(gl.TEXTURE0);
+          gl.bindTexture(gl.TEXTURE_2D, glTex);
+          gl.uniform1i(U.tex, 0);
+          gl.drawArrays(gl.TRIANGLES, 0, 6);
+          requestAnimationFrame(frame);
+        }
+        requestAnimationFrame(frame);
+      }
+
+      if (document.fonts && document.fonts.load) {
+        document.fonts.load('700 100px Outfit').then(start, start);
+      } else {
+        start();
+      }
     })();
   </script>
 </body>
