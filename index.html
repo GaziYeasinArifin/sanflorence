@@ -595,14 +595,12 @@
       if (!carousel) return;
       var track = carousel.querySelector('.track');
       var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      var isDown = false, startX = 0, startScroll = 0, velocity = 0, lastX = 0, lastT = 0, moved = 0, momentumId = null, paused = false;
+      var isDown = false, startX = 0, startScroll = 0, velocity = 0, lastX = 0, lastT = 0, moved = 0, paused = false, fling = 0;
       function now() { return performance.now(); }
-      function stopMomentum() { if (momentumId) { cancelAnimationFrame(momentumId); momentumId = null; } }
       carousel.addEventListener('pointerdown', function (e) {
-        isDown = true; moved = 0; paused = true;
+        isDown = true; moved = 0; paused = true; fling = 0;
         startX = e.clientX; startScroll = carousel.scrollLeft;
         lastX = e.clientX; lastT = now(); velocity = 0;
-        stopMomentum();
         carousel.classList.add('dragging');
         try { carousel.setPointerCapture(e.pointerId); } catch (err) {}
       });
@@ -620,13 +618,7 @@
         isDown = false;
         carousel.classList.remove('dragging');
         paused = false;
-        if (reduceMotion) return;
-        var v = velocity * 16;
-        (function momentum() {
-          if (Math.abs(v) < 0.5) { momentumId = null; return; }
-          carousel.scrollLeft -= v; v *= 0.92;
-          momentumId = requestAnimationFrame(momentum);
-        })();
+        fling = reduceMotion ? 0 : -velocity * 16; // hand momentum to the marquee loop
       }
       carousel.addEventListener('pointerup', endDrag);
       carousel.addEventListener('pointercancel', endDrag);
@@ -657,12 +649,26 @@
       }
       carousel.classList.add('marquee');
       setup();
-      var SPEED = 0.5;
-      (function tick() {
-        if (!paused && !isDown) carousel.scrollLeft += SPEED;
-        if (carousel.scrollLeft >= loopWidth) carousel.scrollLeft -= loopWidth;
-        else if (carousel.scrollLeft < 0) carousel.scrollLeft += loopWidth;
-        requestAnimationFrame(tick);
+      var SPEED = 0.56;     // px per frame (~34 px/s) — 2x base
+      var pos = 0;          // float accumulator — avoids sub-pixel scrollLeft stalling
+      var scrollBoost = 0;  // vertical-scroll energy: speeds up (down) / reverses (up)
+      window.addEventListener('wheel', function (e) {
+        scrollBoost += e.deltaY * 0.05;
+        if (scrollBoost > 32) scrollBoost = 32;
+        else if (scrollBoost < -32) scrollBoost = -32;
+      }, { passive: true });
+      (function loop() {
+        if (isDown) {
+          pos = carousel.scrollLeft;          // follow the drag
+        } else {
+          if (!paused) pos += SPEED;          // base auto-advance (right -> left)
+          pos += fling + scrollBoost;         // fling momentum + vertical-scroll drive
+          fling *= 0.93; if (Math.abs(fling) < 0.05) fling = 0;
+          scrollBoost *= 0.90; if (Math.abs(scrollBoost) < 0.02) scrollBoost = 0;
+          if (loopWidth > 0) { pos = pos % loopWidth; if (pos < 0) pos += loopWidth; }
+          carousel.scrollLeft = pos;
+        }
+        requestAnimationFrame(loop);
       })();
       if (document.fonts && document.fonts.ready) document.fonts.ready.then(setup);
       var rt; window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(setup, 200); });
