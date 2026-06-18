@@ -30,7 +30,7 @@
     :root {
       --accent: #1B4FFF;
       --maxw: 1320px;
-      --pad-x: clamp(28px, 6.5vw, 100px);
+      --pad-x: clamp(32px, 10vw, 200px);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -141,7 +141,7 @@
       color: #fff;
     }
     .hero-line {
-      font-size: clamp(16px, 1.7vw, 23px);
+      font-size: clamp(18px, 2.1vw, 32px);
       line-height: 1.32;
       font-weight: 400;
       color: rgba(255, 255, 255, 0.92);
@@ -233,7 +233,7 @@
     .card-dimmed:hover .card-icon { transform: none; }
 
     /* ---- Giant SanFlorence wordmark (WebGL, transparent over the red) ---- */
-    .wordmark { flex: 0 0 auto; width: 100%; overflow: hidden; position: relative; z-index: 1; }
+    .wordmark { flex: 0 0 auto; width: 100%; overflow: hidden; position: relative; z-index: 1; padding: 0 var(--pad-x); }
     #wm { display: block; width: 100%; height: auto; }
 
     /* ---- FOOTER ---- */
@@ -254,6 +254,7 @@
     /* ---- Responsive ---- */
     @media (max-width: 900px) { .hero-line { max-width: 24ch; } }
     @media (max-width: 768px) {
+      :root { --pad-x: 22px; }
       .nav-brand .brand-text { display: none; }
       .hero {
         flex-direction: column;
@@ -569,17 +570,20 @@
         tx.setTransform(1, 0, 0, 1, 0, 0);
         tx.font = '700 100px Outfit, sans-serif';
         var w100 = tx.measureText(WORD).width || cssW * 0.5;
-        fontPx = (cssW * 0.95 / w100) * 100;
-        cssH = Math.max(40, Math.round(fontPx * 1.04));
+        fontPx = (cssW / w100) * 100;                          // fill the content width (aligned to padding)
+        cssH = Math.round(fontPx * 1.04);
+        var maxH = Math.min(window.innerHeight * 0.34, 360);    // cap height so it never crowds the cards
+        if (cssH > maxH) { cssH = Math.round(maxH); fontPx = cssH / 1.04; }
+        cssH = Math.max(40, cssH);
         tex.width = Math.round(cssW * DPR);
         tex.height = Math.round(cssH * DPR);
         tx.setTransform(DPR, 0, 0, DPR, 0, 0);
         tx.clearRect(0, 0, cssW, cssH);
         tx.font = '700 ' + fontPx + 'px Outfit, sans-serif';
-        tx.textAlign = 'center';
+        tx.textAlign = 'left';
         tx.textBaseline = 'middle';
         tx.fillStyle = '#fff';
-        tx.fillText(WORD, cssW / 2, cssH / 2 + fontPx * 0.04);
+        tx.fillText(WORD, 0, cssH / 2 + fontPx * 0.04);
         canvas.style.height = cssH + 'px';
         canvas.width = Math.round(cssW * DPR);
         canvas.height = Math.round(cssH * DPR);
@@ -593,10 +597,10 @@
           c2.clearRect(0, 0, canvas.width, canvas.height);
           c2.setTransform(DPR, 0, 0, DPR, 0, 0);
           c2.font = '700 ' + fontPx + 'px Outfit, sans-serif';
-          c2.textAlign = 'center';
+          c2.textAlign = 'left';
           c2.textBaseline = 'middle';
           c2.fillStyle = '#fff';
-          c2.fillText(WORD, cssW / 2, cssH / 2 + fontPx * 0.04);
+          c2.fillText(WORD, 0, cssH / 2 + fontPx * 0.04);
         }
         if (document.fonts && document.fonts.load) document.fonts.load('700 100px Outfit').then(draw, draw); else draw();
         var rt; window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(draw, 150); });
