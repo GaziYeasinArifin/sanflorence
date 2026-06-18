@@ -1,6 +1,6 @@
 # SanFlorence Digital — Studio Website
 
-The public studio website for **SanFlorence Digital LLC**, a one-person iOS studio in the San Francisco Bay Area. It showcases released apps (Mes, DIY Decor AI) with a bold, editorial, typographic-first design, and serves as the required Terms of Use and Privacy Policy destination for App Store listings. The signature element is a massive "SanFlorence" wordmark at the foot of the home page that distorts in real time based on cursor proximity using per-letter SVG `feTurbulence` displacement filters.
+The public studio website for **SanFlorence Digital LLC**, an iOS studio in the San Francisco Bay Area. It showcases released apps (Mes, Home Wedding Decor AI) over a bold, animated red→black backdrop, and serves as the App Store destination for Terms, Privacy, FAQ, and support. Signature elements: a giant cursor-reactive "SanFlorence" wordmark, a liquid/chromatic WebGL hover on the hero text, and an auto-scrolling app marquee.
 
 ## Live URL
 
@@ -8,7 +8,7 @@ https://gaziyeasinarifin.github.io/sanflorence/ — (or a custom domain once con
 
 ## Tech
 
-Pure static **HTML / CSS / JS** — no framework, no build tool, no dependencies beyond Google Fonts (Instrument Serif + Inter) loaded from the CDN. Three pages: `index.html`, `terms.html`, `privacy.html`. Dark/light mode respects `prefers-color-scheme`, with a manual toggle persisted to `localStorage`. All animations honor `prefers-reduced-motion`.
+Pure static **HTML / CSS / JS** — no framework or build tool; only Google Fonts (Outfit) from the CDN. Pages: `index.html`, `faq.html`, `terms.html`, `privacy.html`. Shared chrome (nav, full-screen mobile menu, footer, glass reading-page layout) lives in `assets/site.css` + `assets/site.js`; the homepage keeps its WebGL effects inline. A full-screen mobile menu appears at ≤768px, and all animations honor `prefers-reduced-motion`.
 
 ## Local development
 

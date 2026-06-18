@@ -114,6 +114,41 @@
     .theme-toggle:hover { color: #fff; transform: rotate(15deg); }
     .theme-toggle svg { display: block; }
 
+    /* ---- Mobile menu ---- */
+    .nav-burger { display: none; width: 40px; height: 40px; border: none; background: none; cursor: pointer; position: relative; z-index: 210; margin-right: -8px; }
+    .nav-burger span { position: absolute; left: 9px; right: 9px; height: 2px; background: #fff; border-radius: 2px; transition: transform 0.35s ease, top 0.35s ease; }
+    .nav-burger span:nth-child(1) { top: 15px; }
+    .nav-burger span:nth-child(2) { top: 23px; }
+    .nav-burger.open span:nth-child(1) { top: 19px; transform: rotate(45deg); }
+    .nav-burger.open span:nth-child(2) { top: 19px; transform: rotate(-45deg); }
+    .menu {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(28, 2, 8, 0.55);
+      backdrop-filter: blur(26px) saturate(150%);
+      -webkit-backdrop-filter: blur(26px) saturate(150%);
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 96px var(--pad-x) 48px;
+      opacity: 0; visibility: hidden;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
+    }
+    .menu.open { opacity: 1; visibility: visible; }
+    .menu-links { display: flex; flex-direction: column; gap: clamp(10px, 2.4vh, 22px); }
+    .menu-links a {
+      color: #fff; text-decoration: none; font-weight: 600;
+      font-size: clamp(2rem, 11vw, 3.4rem); line-height: 1.05; letter-spacing: -0.02em;
+      opacity: 0; transform: translateY(14px);
+      transition: opacity 0.5s ease, transform 0.5s ease, color 0.2s ease;
+    }
+    .menu.open .menu-links a { opacity: 1; transform: translateY(0); }
+    .menu.open .menu-links a:nth-child(1) { transition-delay: 0.08s; }
+    .menu.open .menu-links a:nth-child(2) { transition-delay: 0.14s; }
+    .menu.open .menu-links a:nth-child(3) { transition-delay: 0.20s; }
+    .menu.open .menu-links a:nth-child(4) { transition-delay: 0.26s; }
+    .menu.open .menu-links a:nth-child(5) { transition-delay: 0.32s; }
+    .menu-foot { margin-top: clamp(28px, 6vh, 56px); font-size: 12px; color: var(--fg-muted); opacity: 0; transition: opacity 0.5s ease 0.4s; }
+    .menu.open .menu-foot { opacity: 1; }
+    body.menu-open { overflow: hidden; }
+
     /* ---- Home main column ---- */
     .home-main {
       position: relative;
@@ -284,6 +319,8 @@
     @media (max-width: 768px) {
       :root { --pad-x: 22px; }
       .nav-brand .brand-text { display: none; }
+      .nav-right { display: none; }
+      .nav-burger { display: block; }
       .hero {
         flex-direction: column;
         align-items: flex-start;
@@ -316,12 +353,26 @@
       <span class="brand-text">SanFlorence Digital</span>
     </a>
     <div class="nav-right">
+      <a class="nav-link" href="faq.html">FAQ</a>
       <a class="nav-link" href="terms.html">Terms</a>
       <a class="nav-link" href="privacy.html">Privacy</a>
       <a class="nav-link" href="mailto:arifin.yeasin@gmail.com">Contact</a>
-      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle dark mode"></button>
     </div>
+    <button class="nav-burger" id="navBurger" type="button" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span>
+    </button>
   </nav>
+
+  <div class="menu" id="navMenu">
+    <nav class="menu-links" aria-label="Mobile">
+      <a href="index.html">Home</a>
+      <a href="faq.html">FAQ</a>
+      <a href="terms.html">Terms of Use</a>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="mailto:arifin.yeasin@gmail.com">Contact</a>
+    </nav>
+    <div class="menu-foot">© 2026 SanFlorence Digital LLC</div>
+  </div>
 
   <div class="home-main">
 
@@ -496,6 +547,7 @@
     <footer class="footer">
       <span class="footer-copy">© 2026 SanFlorence Digital LLC</span>
       <nav class="footer-links" aria-label="Footer">
+        <a href="faq.html">FAQ</a>
         <a href="terms.html">Terms of Use</a>
         <a href="privacy.html">Privacy Policy</a>
         <a href="mailto:arifin.yeasin@gmail.com">Contact</a>
@@ -996,5 +1048,6 @@
       if (hl) makeLiquid(hl, { typewriter: true });
     })();
   </script>
+  <script src="assets/site.js"></script>
 </body>
 </html>
