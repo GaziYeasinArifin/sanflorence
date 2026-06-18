@@ -25,9 +25,8 @@ In the repository: **Settings → Pages → Source: Deploy from a branch → `ma
 
 ## Before going live — replace placeholders
 
-- [ ] `[MES_APP_ID]` in `index.html` — real Mes App Store ID
-- [ ] `[DIYDECOR_APP_ID]` in `index.html` — real DIY Decor AI App Store ID
-- [ ] Real app icons in `assets/icons/` (`mes-icon.png`, `diydecor-icon.png`, 1024×1024) and swap the gradient placeholders for `<img>` tags (see the `TODO` comments on the cards)
+- [x] Real App Store links wired in `index.html` (Mes, Home Wedding Decor AI)
+- [ ] Real app icons in `assets/icons/` (`mes-icon.png`, `diydecor-icon.png`, 1024×1024) and swap the gradient placeholders for `<img>` tags (see the card icon glyphs)
 - [ ] Custom domain in this README and in repo settings, if used
 - [ ] Add the Terms and Privacy URLs to App Store Connect for each app
 
