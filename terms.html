@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terms of Use — SanFlorence Digital</title>
+  <meta name="description" content="Terms of Use for SanFlorence Digital LLC and its iOS apps, including Mes and DIY Decor AI.">
+  <meta name="theme-color" content="#F7F7F5" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0F0F0F" media="(prefers-color-scheme: dark)">
+
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('sf-theme');
+        if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {}
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <style>
+    /* ============================================================
+       DESIGN SYSTEM — shared across index / terms / privacy
+       ============================================================ */
+    :root {
+      --bg: #F7F7F5;
+      --fg: #0A0A0A;
+      --fg-muted: rgba(10, 10, 10, 0.45);
+      --accent: #1B4FFF;
+      --border: rgba(10, 10, 10, 0.12);
+      --card-bg: rgba(10, 10, 10, 0.03);
+      --nav-bg: rgba(247, 247, 245, 0.92);
+      --shadow: rgba(0, 0, 0, 0.10);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #0F0F0F;
+        --fg: #F0F0EE;
+        --fg-muted: rgba(240, 240, 238, 0.45);
+        --border: rgba(240, 240, 238, 0.12);
+        --card-bg: rgba(240, 240, 238, 0.04);
+        --nav-bg: rgba(15, 15, 15, 0.92);
+        --shadow: rgba(0, 0, 0, 0.40);
+      }
+    }
+    [data-theme="dark"] {
+      --bg: #0F0F0F;
+      --fg: #F0F0EE;
+      --fg-muted: rgba(240, 240, 238, 0.45);
+      --border: rgba(240, 240, 238, 0.12);
+      --card-bg: rgba(240, 240, 238, 0.04);
+      --nav-bg: rgba(15, 15, 15, 0.92);
+      --shadow: rgba(0, 0, 0, 0.40);
+    }
+    [data-theme="light"] {
+      --bg: #F7F7F5;
+      --fg: #0A0A0A;
+      --fg-muted: rgba(10, 10, 10, 0.45);
+      --border: rgba(10, 10, 10, 0.12);
+      --card-bg: rgba(10, 10, 10, 0.03);
+      --nav-bg: rgba(247, 247, 245, 0.92);
+      --shadow: rgba(0, 0, 0, 0.10);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { font-size: 16px; scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: 'Inter', sans-serif;
+      font-weight: 400;
+      padding-top: 56px;
+      overflow-x: hidden;
+      transition: background 0.3s, color 0.3s;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    /* ---- NAV ---- */
+    .nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      z-index: 100;
+      background: var(--nav-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-brand {
+      display: flex; align-items: center; gap: 8px;
+      text-decoration: none; color: var(--fg);
+      font-size: 12px; letter-spacing: 0.05em; font-weight: 500;
+    }
+    .diamond { color: var(--accent); font-size: 9px; line-height: 1; }
+    .nav-right { display: flex; align-items: center; gap: 24px; }
+    .nav-link {
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em;
+      color: var(--fg-muted); text-decoration: none; font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-link:hover { color: var(--fg); }
+    .nav-link.active { color: var(--fg); }
+    .theme-toggle {
+      background: none; border: none; color: var(--fg-muted);
+      cursor: pointer; padding: 4px; display: inline-flex; align-items: center;
+      transition: color 0.2s;
+    }
+    .theme-toggle:hover { color: var(--fg); }
+    .theme-toggle svg { display: block; }
+
+    /* ---- FOOTER ---- */
+    .footer {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      padding: 32px 40px; border-top: 1px solid var(--border);
+      font-size: 11px; color: var(--fg-muted);
+    }
+    .footer a { color: inherit; text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+    .footer .dot { opacity: 0.5; }
+
+    /* ============================================================
+       LEGAL PAGE
+       ============================================================ */
+    .legal { max-width: 720px; margin: 0 auto; padding: 120px 40px 80px; }
+    .legal h1 {
+      font-family: 'Instrument Serif', serif; font-weight: 400;
+      font-size: 48px; line-height: 1.05; letter-spacing: -0.01em;
+      margin-bottom: 8px;
+    }
+    .legal .effective { font-size: 13px; color: var(--fg-muted); margin-bottom: 64px; }
+    .legal h2 {
+      font-size: 13px; text-transform: uppercase; letter-spacing: 0.15em;
+      color: var(--fg-muted); font-weight: 500;
+      margin-top: 48px; margin-bottom: 16px;
+    }
+    .legal p { font-size: 15px; line-height: 1.8; margin-bottom: 16px; }
+    .legal ul { font-size: 15px; line-height: 1.8; margin: 0 0 16px 1.2em; }
+    .legal li { margin-bottom: 8px; }
+    .legal a { color: var(--accent); text-decoration: none; }
+    .legal a:hover { text-decoration: underline; }
+    .legal strong { font-weight: 500; }
+    .back-home {
+      display: inline-block; margin-top: 64px; font-size: 13px;
+      color: var(--fg-muted); text-decoration: none; transition: color 0.2s;
+    }
+    .back-home:hover { color: var(--fg); }
+
+    @media (max-width: 768px) {
+      .nav { padding: 0 20px; }
+      .nav-right { gap: 16px; }
+      .nav-brand .brand-text { display: none; }
+      .nav-link.legal-link { display: none; }
+      .legal { padding: 96px 20px 64px; }
+      .legal h1 { font-size: 38px; }
+      .footer { padding: 28px 20px; }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <a class="nav-brand" href="index.html" aria-label="SanFlorence Digital — home">
+      <span class="diamond">◆</span>
+      <span class="brand-text">SanFlorence Digital</span>
+    </a>
+    <div class="nav-right">
+      <a class="nav-link" href="index.html#apps">Apps</a>
+      <a class="nav-link legal-link active" href="terms.html">Terms</a>
+      <a class="nav-link legal-link" href="privacy.html">Privacy</a>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle dark mode"></button>
+    </div>
+  </nav>
+
+  <main class="legal">
+    <h1>Terms of Use</h1>
+    <p class="effective">Effective: June 17, 2026</p>
+
+    <h2>01 — Acceptance</h2>
+    <p>These Terms of Use (“Terms”) govern your access to and use of the applications, websites, and services (collectively, the “Apps”) provided by SanFlorence Digital LLC (“SanFlorence,” “we,” “us,” or “our”), a limited liability company organized under the laws of the State of California. By downloading, installing, or using any of our Apps, you agree to be bound by these Terms. If you do not agree, please do not use the Apps.</p>
+
+    <h2>02 — Use of Apps</h2>
+    <p>We grant you a personal, limited, non-exclusive, non-transferable, and revocable license to use the Apps for your own lawful purposes, subject to these Terms and to the Apple App Store Terms of Service. You agree not to:</p>
+    <ul>
+      <li>copy, modify, reverse engineer, decompile, or attempt to extract the source code of the Apps;</li>
+      <li>use the Apps to break any law or to infringe the rights of others;</li>
+      <li>interfere with, disrupt, or overload the Apps or the servers and networks that support them; or</li>
+      <li>use the Apps to generate, send, or store unlawful, harmful, deceptive, or abusive content.</li>
+    </ul>
+
+    <h2>03 — Intellectual Property</h2>
+    <p>The Apps — including all software, text, design, graphics, logos, and the “SanFlorence” name and marks — are owned by SanFlorence Digital LLC and are protected by applicable intellectual property laws. Content you create using the Apps remains <strong>yours</strong>. We claim no ownership of your content, and you are solely responsible for it.</p>
+
+    <h2>04 — In-App Purchases</h2>
+    <p>Some Apps offer subscriptions or one-time purchases. All purchases are processed and billed by Apple through your App Store account and are subject to Apple’s terms. Subscriptions renew automatically unless canceled at least 24 hours before the end of the current period, and you can manage or cancel them at any time in your App Store account settings. Except where required by law or by Apple’s policies, payments are non-refundable. Refund requests are handled by Apple, not by SanFlorence.</p>
+
+    <h2>05 — Third-Party Services</h2>
+    <p>Our Apps depend on third-party services to function, including the <strong>Apple App Store</strong> (distribution and billing), the <strong>Google Gemini API</strong> (AI text and content processing), and <strong>RevenueCat</strong> (subscription management). When you use features powered by these services, your use is also governed by their respective terms and privacy policies. We are not responsible for the practices or availability of third-party services.</p>
+
+    <h2>06 — Disclaimer</h2>
+    <p>The Apps are provided on an “as is” and “as available” basis, without warranties of any kind, whether express or implied, including but not limited to merchantability, fitness for a particular purpose, and non-infringement. AI-generated output may be inaccurate, incomplete, or unexpected; you are responsible for reviewing it before relying on it. We do not warrant that the Apps will be uninterrupted, error-free, or fully secure.</p>
+
+    <h2>07 — Limitation of Liability</h2>
+    <p>To the fullest extent permitted by law, SanFlorence Digital LLC and its owner will not be liable for any indirect, incidental, special, consequential, or punitive damages, or for any loss of data, profits, or goodwill, arising out of or related to your use of the Apps. Our total liability for any claim relating to the Apps will not exceed the greater of the amount you paid us in the twelve months preceding the claim or twenty U.S. dollars (USD&nbsp;$20).</p>
+
+    <h2>08 — Changes</h2>
+    <p>We may update these Terms from time to time. When we do, we will revise the “Effective” date above, and material changes will be reflected within the Apps or on this page. Your continued use of the Apps after changes take effect constitutes acceptance of the revised Terms.</p>
+
+    <h2>09 — Governing Law</h2>
+    <p>These Terms are governed by the laws of the State of California, without regard to its conflict-of-laws principles. Any dispute arising from these Terms or the Apps will be subject to the exclusive jurisdiction of the state and federal courts located in California.</p>
+
+    <h2>10 — Contact</h2>
+    <p>Questions about these Terms? Reach us at <a href="mailto:arifin.yeasin@gmail.com">arifin.yeasin@gmail.com</a>.</p>
+
+    <a class="back-home" href="index.html">← Back to home</a>
+  </main>
+
+  <footer class="footer" id="footer">
+    <span>© 2026 SanFlorence Digital LLC</span>
+    <span class="dot">·</span>
+    <a href="terms.html">Terms of Use</a>
+    <span class="dot">·</span>
+    <a href="privacy.html">Privacy Policy</a>
+  </footer>
+
+  <script>
+    (function () {
+      var root = document.documentElement;
+      var toggle = document.getElementById('themeToggle');
+      var KEY = 'sf-theme';
+      var SUN = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>';
+      var MOON = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
+      function systemDark() { return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches; }
+      function stored() { try { var t = localStorage.getItem(KEY); return (t === 'dark' || t === 'light') ? t : null; } catch (e) { return null; } }
+      function effective() { return stored() || (systemDark() ? 'dark' : 'light'); }
+      function paintIcon() { if (toggle) toggle.innerHTML = effective() === 'dark' ? SUN : MOON; }
+      paintIcon();
+      if (toggle) {
+        toggle.addEventListener('click', function () {
+          var next = effective() === 'dark' ? 'light' : 'dark';
+          root.setAttribute('data-theme', next);
+          try { localStorage.setItem(KEY, next); } catch (e) {}
+          paintIcon();
+        });
+      }
+      if (window.matchMedia) {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        var onChange = function () { if (!stored()) paintIcon(); };
+        if (mq.addEventListener) mq.addEventListener('change', onChange);
+        else if (mq.addListener) mq.addListener(onChange);
+      }
+    })();
+  </script>
+</body>
+</html>

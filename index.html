@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SanFlorence Digital — Thoughtful iOS apps</title>
+  <meta name="description" content="SanFlorence Digital — iOS apps built with care. Mes, DIY Decor AI, and more.">
+  <meta property="og:title" content="SanFlorence Digital">
+  <meta property="og:description" content="Thoughtful iOS apps from a one-person studio in the San Francisco Bay Area.">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#F7F7F5" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0F0F0F" media="(prefers-color-scheme: dark)">
+
+  <!-- Set theme before paint to avoid a flash of the wrong mode -->
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('sf-theme');
+        if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {}
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <style>
+    /* ============================================================
+       DESIGN SYSTEM — shared across index / terms / privacy
+       ============================================================ */
+    :root {
+      --bg: #F7F7F5;
+      --fg: #0A0A0A;
+      --fg-muted: rgba(10, 10, 10, 0.45);
+      --accent: #1B4FFF;
+      --border: rgba(10, 10, 10, 0.12);
+      --card-bg: rgba(10, 10, 10, 0.03);
+      --nav-bg: rgba(247, 247, 245, 0.92);
+      --shadow: rgba(0, 0, 0, 0.10);
+    }
+
+    /* System dark mode — only when the user hasn't forced light via the toggle */
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #0F0F0F;
+        --fg: #F0F0EE;
+        --fg-muted: rgba(240, 240, 238, 0.45);
+        --border: rgba(240, 240, 238, 0.12);
+        --card-bg: rgba(240, 240, 238, 0.04);
+        --nav-bg: rgba(15, 15, 15, 0.92);
+        --shadow: rgba(0, 0, 0, 0.40);
+      }
+    }
+
+    /* Manual toggle overrides */
+    [data-theme="dark"] {
+      --bg: #0F0F0F;
+      --fg: #F0F0EE;
+      --fg-muted: rgba(240, 240, 238, 0.45);
+      --border: rgba(240, 240, 238, 0.12);
+      --card-bg: rgba(240, 240, 238, 0.04);
+      --nav-bg: rgba(15, 15, 15, 0.92);
+      --shadow: rgba(0, 0, 0, 0.40);
+    }
+    [data-theme="light"] {
+      --bg: #F7F7F5;
+      --fg: #0A0A0A;
+      --fg-muted: rgba(10, 10, 10, 0.45);
+      --border: rgba(10, 10, 10, 0.12);
+      --card-bg: rgba(10, 10, 10, 0.03);
+      --nav-bg: rgba(247, 247, 245, 0.92);
+      --shadow: rgba(0, 0, 0, 0.10);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { font-size: 16px; scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: 'Inter', sans-serif;
+      font-weight: 400;
+      padding-top: 56px;
+      overflow-x: hidden;
+      transition: background 0.3s, color 0.3s;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    /* ---- NAV (shared) ---- */
+    .nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      z-index: 100;
+      background: var(--nav-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: var(--fg);
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      font-weight: 500;
+    }
+    .diamond { color: var(--accent); font-size: 9px; line-height: 1; }
+    .nav-right { display: flex; align-items: center; gap: 24px; }
+    .nav-link {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--fg-muted);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-link:hover { color: var(--fg); }
+    .theme-toggle {
+      background: none;
+      border: none;
+      color: var(--fg-muted);
+      cursor: pointer;
+      padding: 4px;
+      display: inline-flex;
+      align-items: center;
+      transition: color 0.2s;
+    }
+    .theme-toggle:hover { color: var(--fg); }
+    .theme-toggle svg { display: block; }
+
+    /* ---- FOOTER (shared) ---- */
+    .footer {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 32px 40px;
+      border-top: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--fg-muted);
+    }
+    .footer a { color: inherit; text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+    .footer .dot { opacity: 0.5; }
+
+    /* ============================================================
+       HOME PAGE
+       ============================================================ */
+
+    /* ---- Hero ---- */
+    .hero {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 80px 40px;
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 24px;
+      align-items: center;
+      min-height: 45vh;
+    }
+    .hero-title {
+      grid-column: 1 / 6;
+      font-family: 'Instrument Serif', serif;
+      font-weight: 400;
+      font-size: clamp(2rem, 3.5vw, 3.2rem);
+      line-height: 1.1;
+      letter-spacing: -0.01em;
+    }
+    .hero-desc {
+      grid-column: 7 / 12;
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--fg-muted);
+      max-width: 42ch;
+    }
+
+    /* ---- Apps label ---- */
+    .apps-label { padding: 0 40px; scroll-margin-top: 80px; }
+    .apps-label .kicker {
+      display: block;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--fg-muted);
+      margin-bottom: 16px;
+    }
+    .rule { border: none; border-top: 1px solid var(--border); }
+
+    /* ---- Carousel ---- */
+    .carousel {
+      width: 100%;
+      overflow-x: auto;
+      overflow-y: hidden;
+      position: relative;
+      padding: 48px 0 48px 40px;
+      cursor: grab;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .carousel::-webkit-scrollbar { display: none; }
+    .carousel.dragging { cursor: grabbing; }
+    .track { display: flex; width: max-content; }
+    .card {
+      width: 320px;
+      height: 440px;
+      flex-shrink: 0;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--card-bg);
+      padding: 32px;
+      margin-right: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 300ms ease, box-shadow 300ms ease;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 24px 48px var(--shadow);
+    }
+    .card-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 18px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .card-icon img { width: 100%; height: 100%; object-fit: cover; }
+    .card-name {
+      font-family: 'Instrument Serif', serif;
+      font-weight: 400;
+      font-size: 32px;
+      line-height: 1;
+    }
+    .card-subtitle { font-size: 12px; color: var(--fg-muted); margin-top: 4px; }
+    .card-tagline {
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--fg-muted);
+      margin-top: 16px;
+    }
+    .card-bottom { display: flex; flex-direction: column; align-items: flex-start; }
+    .card-badge {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      padding: 4px 10px;
+      display: inline-block;
+      color: var(--fg-muted);
+    }
+    .card-store { display: inline-block; margin-top: 12px; }
+    .card-store img { display: block; height: 40px; width: auto; }
+    .card-locked .lock { margin-top: 12px; color: var(--fg-muted); display: inline-flex; }
+    .card-dimmed { opacity: 0.4; }
+    .card-dimmed:hover { transform: none; box-shadow: none; }
+
+    /* ---- Glitch signature ---- */
+    .glitch-section {
+      width: 100%;
+      padding: 80px 0 0 0;
+      overflow: hidden;
+      position: relative;
+    }
+    .glitch-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      color: var(--fg-muted);
+      padding-left: 40px;
+      margin-bottom: 24px;
+    }
+    .glitch { display: block; width: 100%; }
+    .glitch-text {
+      font-family: 'Instrument Serif', serif;
+      font-size: 15vw;
+      fill: var(--fg);
+      transition: fill 0.3s;
+    }
+
+    /* ---- Responsive ---- */
+    @media (max-width: 768px) {
+      .nav { padding: 0 20px; }
+      .nav-right { gap: 16px; }
+      .nav-brand .brand-text { display: none; }
+      .nav-link.legal-link { display: none; }
+
+      .hero {
+        grid-template-columns: 1fr;
+        padding: 56px 20px;
+        gap: 28px;
+        min-height: auto;
+      }
+      .hero-title { grid-column: 1 / -1; }
+      .hero-desc { grid-column: 1 / -1; }
+
+      .apps-label { padding: 0 20px; }
+      .carousel { padding: 36px 0 36px 20px; }
+      .card { width: 280px; height: 420px; padding: 28px; }
+
+      .glitch-section { padding-top: 56px; }
+      .glitch-label { padding-left: 20px; }
+      .glitch-text { font-size: 18vw; }
+
+      .footer { padding: 28px 20px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .card { transition: none; }
+      .card:hover { transform: none; box-shadow: 0 12px 24px var(--shadow); }
+      .glitch-text { transition: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===================== NAV ===================== -->
+  <nav class="nav">
+    <a class="nav-brand" href="index.html" aria-label="SanFlorence Digital — home">
+      <span class="diamond">◆</span>
+      <span class="brand-text">SanFlorence Digital</span>
+    </a>
+    <div class="nav-right">
+      <a class="nav-link" href="#apps">Apps</a>
+      <a class="nav-link legal-link" href="terms.html">Terms</a>
+      <a class="nav-link legal-link" href="privacy.html">Privacy</a>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle dark mode"></button>
+    </div>
+  </nav>
+
+  <main>
+    <!-- ===================== HERO ===================== -->
+    <section class="hero">
+      <h1 class="hero-title">We build thoughtful tools for everyday life.</h1>
+      <p class="hero-desc">SanFlorence Digital is a one-person iOS studio based in the San Francisco Bay Area. We obsess over small details, ship real products, and believe great software can come from anywhere.</p>
+    </section>
+
+    <!-- ===================== APPS LABEL ===================== -->
+    <section class="apps-label" id="apps">
+      <span class="kicker">02 Apps Available on the App Store</span>
+      <hr class="rule">
+    </section>
+
+    <!-- ===================== CAROUSEL ===================== -->
+    <section class="carousel-section" aria-label="Apps">
+      <div class="carousel" id="carousel">
+        <div class="track">
+
+          <!-- Card 1 — Mes -->
+          <article class="card">
+            <div class="card-top">
+              <div class="card-icon" style="background: linear-gradient(135deg, #1B4FFF, #0030CC);">
+                <!-- TODO: replace with <img src="assets/icons/mes-icon.png" alt="Mes app icon"> -->
+              </div>
+              <h2 class="card-name">Mes</h2>
+              <div class="card-subtitle">AI Tools for iMessage</div>
+              <p class="card-tagline">AI-powered replies, tones, and tools — right inside iMessage.</p>
+            </div>
+            <div class="card-bottom">
+              <span class="card-badge">Productivity · iOS</span>
+              <!-- TODO: replace [MES_APP_ID] with the real App Store ID -->
+              <a class="card-store" href="https://apps.apple.com/app/id[MES_APP_ID]" target="_blank" rel="noopener">
+                <img src="assets/badge-appstore.svg" alt="Download Mes on the App Store">
+              </a>
+            </div>
+          </article>
+
+          <!-- Card 2 — DIY Decor AI -->
+          <article class="card">
+            <div class="card-top">
+              <div class="card-icon" style="background: linear-gradient(135deg, #FF6B35, #E8430A);">
+                <!-- TODO: replace with <img src="assets/icons/diydecor-icon.png" alt="DIY Decor AI app icon"> -->
+              </div>
+              <h2 class="card-name">DIY Decor AI</h2>
+              <div class="card-subtitle">Room Redesign with AI</div>
+              <p class="card-tagline">Redesign any room instantly. Point, shoot, transform.</p>
+            </div>
+            <div class="card-bottom">
+              <span class="card-badge">Lifestyle · iOS</span>
+              <!-- TODO: replace [DIYDECOR_APP_ID] with the real App Store ID -->
+              <a class="card-store" href="https://apps.apple.com/app/id[DIYDECOR_APP_ID]" target="_blank" rel="noopener">
+                <img src="assets/badge-appstore.svg" alt="Download DIY Decor AI on the App Store">
+              </a>
+            </div>
+          </article>
+
+          <!-- Card 3 — Coming soon -->
+          <article class="card card-dimmed card-locked">
+            <div class="card-top">
+              <div class="card-icon" style="background: linear-gradient(135deg, rgba(120,120,120,0.5), rgba(80,80,80,0.5));"></div>
+              <h2 class="card-name">Something new.</h2>
+              <p class="card-tagline">A new app from SanFlorence — arriving 2026.</p>
+            </div>
+            <div class="card-bottom">
+              <span class="card-badge">Coming soon</span>
+              <span class="lock" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="5" y="11" width="14" height="9" rx="2"></rect>
+                  <path d="M8 11V7a4 4 0 0 1 8 0v4"></path>
+                </svg>
+              </span>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== GLITCH SIGNATURE ===================== -->
+    <section class="glitch-section">
+      <div class="glitch-label">SanFlorence Digital LLC</div>
+      <svg id="glitch" class="glitch" width="100%" xmlns="http://www.w3.org/2000/svg" aria-label="SanFlorence" role="img"></svg>
+    </section>
+  </main>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="footer" id="footer">
+    <span>© 2026 SanFlorence Digital LLC</span>
+    <span class="dot">·</span>
+    <a href="terms.html">Terms of Use</a>
+    <span class="dot">·</span>
+    <a href="privacy.html">Privacy Policy</a>
+  </footer>
+
+  <script>
+    /* ============================================================
+       THEME TOGGLE
+       ============================================================ */
+    (function () {
+      var root = document.documentElement;
+      var toggle = document.getElementById('themeToggle');
+      var KEY = 'sf-theme';
+      var SUN = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>';
+      var MOON = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
+
+      function systemDark() {
+        return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      }
+      function stored() {
+        try { var t = localStorage.getItem(KEY); return (t === 'dark' || t === 'light') ? t : null; } catch (e) { return null; }
+      }
+      function effective() {
+        return stored() || (systemDark() ? 'dark' : 'light');
+      }
+      function paintIcon() {
+        if (toggle) toggle.innerHTML = effective() === 'dark' ? SUN : MOON;
+      }
+
+      paintIcon();
+
+      if (toggle) {
+        toggle.addEventListener('click', function () {
+          var next = effective() === 'dark' ? 'light' : 'dark';
+          root.setAttribute('data-theme', next);
+          try { localStorage.setItem(KEY, next); } catch (e) {}
+          paintIcon();
+        });
+      }
+
+      // If the OS theme changes and the user hasn't picked manually, follow it.
+      if (window.matchMedia) {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        var onChange = function () { if (!stored()) paintIcon(); };
+        if (mq.addEventListener) mq.addEventListener('change', onChange);
+        else if (mq.addListener) mq.addListener(onChange);
+      }
+    })();
+
+    /* ============================================================
+       CAROUSEL — drag, momentum, auto-advance
+       ============================================================ */
+    (function () {
+      var carousel = document.getElementById('carousel');
+      if (!carousel) return;
+      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      var isDown = false, startX = 0, startScroll = 0;
+      var velocity = 0, lastX = 0, lastT = 0, moved = 0, momentumId = null;
+      var paused = false;
+
+      function now() { return performance.now(); }
+      function stopMomentum() { if (momentumId) { cancelAnimationFrame(momentumId); momentumId = null; } }
+
+      carousel.addEventListener('pointerdown', function (e) {
+        isDown = true; moved = 0; paused = true;
+        startX = e.clientX;
+        startScroll = carousel.scrollLeft;
+        lastX = e.clientX; lastT = now(); velocity = 0;
+        stopMomentum();
+        carousel.classList.add('dragging');
+        try { carousel.setPointerCapture(e.pointerId); } catch (err) {}
+      });
+
+      carousel.addEventListener('pointermove', function (e) {
+        if (!isDown) return;
+        var dx = e.clientX - startX;
+        moved = Math.abs(dx);
+        carousel.scrollLeft = startScroll - dx;
+        var t = now();
+        var dt = t - lastT;
+        if (dt > 0) velocity = (e.clientX - lastX) / dt; // px per ms
+        lastX = e.clientX; lastT = t;
+      });
+
+      function endDrag() {
+        if (!isDown) return;
+        isDown = false;
+        carousel.classList.remove('dragging');
+        paused = false;
+        if (reduceMotion) return;
+        var v = velocity * 16; // approx px per frame
+        (function momentum() {
+          if (Math.abs(v) < 0.5) { momentumId = null; return; }
+          carousel.scrollLeft -= v;
+          v *= 0.92;
+          momentumId = requestAnimationFrame(momentum);
+        })();
+      }
+      carousel.addEventListener('pointerup', endDrag);
+      carousel.addEventListener('pointercancel', endDrag);
+
+      // Suppress the click that follows a real drag so card links don't fire.
+      carousel.addEventListener('click', function (e) {
+        if (moved > 5) { e.preventDefault(); e.stopPropagation(); }
+      }, true);
+
+      // Pause auto-advance while hovering.
+      carousel.addEventListener('pointerenter', function () { paused = true; });
+      carousel.addEventListener('pointerleave', function () { paused = false; });
+
+      function step() {
+        if (paused || isDown) return;
+        var card = carousel.querySelector('.card');
+        var cardWidth = card ? card.getBoundingClientRect().width + 24 : 344;
+        var maxScroll = carousel.scrollWidth - carousel.clientWidth;
+        if (carousel.scrollLeft >= maxScroll - 4) {
+          carousel.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+          carousel.scrollBy({ left: cardWidth, behavior: 'smooth' });
+        }
+      }
+      if (!reduceMotion) setInterval(step, 4000);
+    })();
+
+    /* ============================================================
+       GLITCH SIGNATURE — per-letter feTurbulence driven by cursor
+       ============================================================ */
+    (function () {
+      var svg = document.getElementById('glitch');
+      if (!svg) return;
+      var NS = 'http://www.w3.org/2000/svg';
+      var WORD = 'SanFlorence';
+      var letters = WORD.split('');
+      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // --- Build one displacement filter per letter ---
+      var defs = document.createElementNS(NS, 'defs');
+      var turbs = [];
+      letters.forEach(function (ch, i) {
+        var filter = document.createElementNS(NS, 'filter');
+        filter.setAttribute('id', 'glitch-' + i);
+        filter.setAttribute('x', '-30%');
+        filter.setAttribute('y', '-30%');
+        filter.setAttribute('width', '160%');
+        filter.setAttribute('height', '160%');
+
+        var turb = document.createElementNS(NS, 'feTurbulence');
+        turb.setAttribute('type', 'turbulence');
+        turb.setAttribute('baseFrequency', '0');
+        turb.setAttribute('numOctaves', '4');
+        turb.setAttribute('seed', String(i));
+        turb.setAttribute('stitchTiles', 'stitch');
+        turb.setAttribute('result', 'noise');
+
+        var disp = document.createElementNS(NS, 'feDisplacementMap');
+        disp.setAttribute('in', 'SourceGraphic');
+        disp.setAttribute('in2', 'noise');
+        disp.setAttribute('scale', '20');
+        disp.setAttribute('xChannelSelector', 'R');
+        disp.setAttribute('yChannelSelector', 'G');
+
+        filter.appendChild(turb);
+        filter.appendChild(disp);
+        defs.appendChild(filter);
+        turbs.push(turb);
+      });
+      svg.appendChild(defs);
+
+      // --- Build the text with one filtered tspan per letter ---
+      var text = document.createElementNS(NS, 'text');
+      text.setAttribute('text-anchor', 'middle');
+      text.setAttribute('dominant-baseline', 'middle');
+      text.setAttribute('class', 'glitch-text');
+      var tspans = letters.map(function (ch, i) {
+        var t = document.createElementNS(NS, 'tspan');
+        t.setAttribute('filter', 'url(#glitch-' + i + ')');
+        t.textContent = ch;
+        text.appendChild(t);
+        return t;
+      });
+      svg.appendChild(text);
+
+      // --- Size the SVG and spread the letters to ~95% width ---
+      function layout() {
+        var w = svg.clientWidth || svg.getBoundingClientRect().width || window.innerWidth;
+        text.setAttribute('letter-spacing', '0');
+        text.setAttribute('x', w / 2);
+        text.setAttribute('y', 0);
+        var natural = 0;
+        try { natural = text.getComputedTextLength(); } catch (e) { natural = w * 0.8; }
+        var targetW = w * 0.95;
+        var ls = letters.length > 1 ? (targetW - natural) / (letters.length - 1) : 0;
+        var minLs = -0.06 * (natural / letters.length);
+        if (ls < minLs) ls = minLs;
+        text.setAttribute('letter-spacing', String(ls));
+
+        var bb;
+        try { bb = text.getBBox(); } catch (e) { bb = { height: w * 0.18 }; }
+        var h = Math.max(bb.height * 1.12, w * 0.02);
+        svg.setAttribute('height', h);
+        svg.style.height = h + 'px';
+        text.setAttribute('y', h / 2);
+      }
+      layout();
+      var rt;
+      window.addEventListener('resize', function () {
+        clearTimeout(rt);
+        rt = setTimeout(function () { layout(); kick(); }, 150);
+      });
+
+      if (reduceMotion) {
+        turbs.forEach(function (t) { t.setAttribute('baseFrequency', '0'); });
+        return; // no cursor reactivity when reduced motion is requested
+      }
+
+      // --- Cursor-driven animation ---
+      var MAXD = 220;          // px radius of influence
+      var MAXFREQ = 0.09;      // peak turbulence
+      var current = letters.map(function () { return 0; });
+      var mouseX = -99999, mouseY = -99999, active = false, running = false;
+
+      function kick() { if (!running) { running = true; requestAnimationFrame(frame); } }
+
+      function frame() {
+        var busy = false;
+        for (var i = 0; i < tspans.length; i++) {
+          var target = 0;
+          if (active) {
+            var r = tspans[i].getBoundingClientRect();
+            var cx = r.left + r.width / 2;
+            var cy = r.top + r.height / 2;
+            var dx = mouseX - cx, dy = mouseY - cy;
+            var dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < MAXD) target = (1 - dist / MAXD) * MAXFREQ;
+          }
+          // Spring feel: rise fast toward the cursor, settle slow away from it.
+          var lerp = target > current[i] ? 0.12 : 0.08;
+          var next = current[i] + (target - current[i]) * lerp;
+          if (Math.abs(next - current[i]) > 0.0005) {
+            current[i] = next;
+            turbs[i].setAttribute('baseFrequency', next.toFixed(4));
+            busy = true;
+          } else if (current[i] !== 0 && next < 0.0006) {
+            current[i] = 0;
+            turbs[i].setAttribute('baseFrequency', '0');
+          } else {
+            current[i] = next;
+            if (target > 0) busy = true;
+          }
+        }
+        if (active || busy) { requestAnimationFrame(frame); }
+        else { running = false; }
+      }
+
+      window.addEventListener('mousemove', function (e) {
+        mouseX = e.clientX; mouseY = e.clientY; active = true; kick();
+      }, { passive: true });
+      document.addEventListener('mouseleave', function () { active = false; kick(); });
+      window.addEventListener('blur', function () { active = false; kick(); });
+    })();
+  </script>
+</body>
+</html>

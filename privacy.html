@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy — SanFlorence Digital</title>
+  <meta name="description" content="Privacy Policy for SanFlorence Digital LLC — what data Mes and DIY Decor AI collect, and how it is used.">
+  <meta name="theme-color" content="#F7F7F5" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0F0F0F" media="(prefers-color-scheme: dark)">
+
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('sf-theme');
+        if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {}
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <style>
+    /* ============================================================
+       DESIGN SYSTEM — shared across index / terms / privacy
+       ============================================================ */
+    :root {
+      --bg: #F7F7F5;
+      --fg: #0A0A0A;
+      --fg-muted: rgba(10, 10, 10, 0.45);
+      --accent: #1B4FFF;
+      --border: rgba(10, 10, 10, 0.12);
+      --card-bg: rgba(10, 10, 10, 0.03);
+      --nav-bg: rgba(247, 247, 245, 0.92);
+      --shadow: rgba(0, 0, 0, 0.10);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #0F0F0F;
+        --fg: #F0F0EE;
+        --fg-muted: rgba(240, 240, 238, 0.45);
+        --border: rgba(240, 240, 238, 0.12);
+        --card-bg: rgba(240, 240, 238, 0.04);
+        --nav-bg: rgba(15, 15, 15, 0.92);
+        --shadow: rgba(0, 0, 0, 0.40);
+      }
+    }
+    [data-theme="dark"] {
+      --bg: #0F0F0F;
+      --fg: #F0F0EE;
+      --fg-muted: rgba(240, 240, 238, 0.45);
+      --border: rgba(240, 240, 238, 0.12);
+      --card-bg: rgba(240, 240, 238, 0.04);
+      --nav-bg: rgba(15, 15, 15, 0.92);
+      --shadow: rgba(0, 0, 0, 0.40);
+    }
+    [data-theme="light"] {
+      --bg: #F7F7F5;
+      --fg: #0A0A0A;
+      --fg-muted: rgba(10, 10, 10, 0.45);
+      --border: rgba(10, 10, 10, 0.12);
+      --card-bg: rgba(10, 10, 10, 0.03);
+      --nav-bg: rgba(247, 247, 245, 0.92);
+      --shadow: rgba(0, 0, 0, 0.10);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { font-size: 16px; scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: 'Inter', sans-serif;
+      font-weight: 400;
+      padding-top: 56px;
+      overflow-x: hidden;
+      transition: background 0.3s, color 0.3s;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    /* ---- NAV ---- */
+    .nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      z-index: 100;
+      background: var(--nav-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-brand {
+      display: flex; align-items: center; gap: 8px;
+      text-decoration: none; color: var(--fg);
+      font-size: 12px; letter-spacing: 0.05em; font-weight: 500;
+    }
+    .diamond { color: var(--accent); font-size: 9px; line-height: 1; }
+    .nav-right { display: flex; align-items: center; gap: 24px; }
+    .nav-link {
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em;
+      color: var(--fg-muted); text-decoration: none; font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-link:hover { color: var(--fg); }
+    .nav-link.active { color: var(--fg); }
+    .theme-toggle {
+      background: none; border: none; color: var(--fg-muted);
+      cursor: pointer; padding: 4px; display: inline-flex; align-items: center;
+      transition: color 0.2s;
+    }
+    .theme-toggle:hover { color: var(--fg); }
+    .theme-toggle svg { display: block; }
+
+    /* ---- FOOTER ---- */
+    .footer {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      padding: 32px 40px; border-top: 1px solid var(--border);
+      font-size: 11px; color: var(--fg-muted);
+    }
+    .footer a { color: inherit; text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+    .footer .dot { opacity: 0.5; }
+
+    /* ============================================================
+       LEGAL PAGE
+       ============================================================ */
+    .legal { max-width: 720px; margin: 0 auto; padding: 120px 40px 80px; }
+    .legal h1 {
+      font-family: 'Instrument Serif', serif; font-weight: 400;
+      font-size: 48px; line-height: 1.05; letter-spacing: -0.01em;
+      margin-bottom: 8px;
+    }
+    .legal .effective { font-size: 13px; color: var(--fg-muted); margin-bottom: 64px; }
+    .legal h2 {
+      font-size: 13px; text-transform: uppercase; letter-spacing: 0.15em;
+      color: var(--fg-muted); font-weight: 500;
+      margin-top: 48px; margin-bottom: 16px;
+    }
+    .legal p { font-size: 15px; line-height: 1.8; margin-bottom: 16px; }
+    .legal ul { font-size: 15px; line-height: 1.8; margin: 0 0 16px 1.2em; }
+    .legal li { margin-bottom: 8px; }
+    .legal a { color: var(--accent); text-decoration: none; }
+    .legal a:hover { text-decoration: underline; }
+    .legal strong { font-weight: 500; }
+    .back-home {
+      display: inline-block; margin-top: 64px; font-size: 13px;
+      color: var(--fg-muted); text-decoration: none; transition: color 0.2s;
+    }
+    .back-home:hover { color: var(--fg); }
+
+    @media (max-width: 768px) {
+      .nav { padding: 0 20px; }
+      .nav-right { gap: 16px; }
+      .nav-brand .brand-text { display: none; }
+      .nav-link.legal-link { display: none; }
+      .legal { padding: 96px 20px 64px; }
+      .legal h1 { font-size: 38px; }
+      .footer { padding: 28px 20px; }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <a class="nav-brand" href="index.html" aria-label="SanFlorence Digital — home">
+      <span class="diamond">◆</span>
+      <span class="brand-text">SanFlorence Digital</span>
+    </a>
+    <div class="nav-right">
+      <a class="nav-link" href="index.html#apps">Apps</a>
+      <a class="nav-link legal-link" href="terms.html">Terms</a>
+      <a class="nav-link legal-link active" href="privacy.html">Privacy</a>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle dark mode"></button>
+    </div>
+  </nav>
+
+  <main class="legal">
+    <h1>Privacy Policy</h1>
+    <p class="effective">Effective: June 17, 2026</p>
+
+    <h2>01 — Overview</h2>
+    <p>This Privacy Policy explains how SanFlorence Digital LLC (“SanFlorence,” “we,” “us,” or “our”) collects, uses, and protects information when you use our applications, including <strong>Mes</strong> (AI Tools for iMessage) and <strong>DIY Decor AI</strong> (collectively, the “Apps”). We are a one-person iOS studio based in California, and we are committed to collecting as little personal data as possible.</p>
+
+    <h2>02 — Information We Collect</h2>
+    <p>We collect only what the Apps need to work:</p>
+    <ul>
+      <li><strong>Content you provide.</strong> For Mes, the message text you choose to process. For DIY Decor AI, the room photos you choose to upload. This content is used solely to generate your result.</li>
+      <li><strong>Purchase information.</strong> When you subscribe, we receive transaction and subscription-status data through Apple and RevenueCat. We never see your full payment card details.</li>
+      <li><strong>Usage and diagnostic data.</strong> Basic, non-identifying information such as app version, device type, and crash logs that help us fix bugs and improve the Apps.</li>
+    </ul>
+    <p>We do not require you to create an account, and we do not collect your name, email address, or contacts unless you choose to contact us directly.</p>
+
+    <h2>03 — How We Use Your Information</h2>
+    <p>We use information to: (a) provide the core features of the Apps, including generating AI replies and room redesigns; (b) process and manage your subscriptions; (c) diagnose problems, prevent abuse, and improve performance; and (d) respond to your support requests. We do <strong>not</strong> use your content to train our own models, and we do <strong>not</strong> sell your personal information.</p>
+
+    <h2>04 — Third-Party Services</h2>
+    <p>To deliver AI features, we share the minimum data necessary with trusted providers:</p>
+    <ul>
+      <li><strong>Google Gemini API.</strong> Mes sends the text you choose to process to Google’s servers to generate replies and suggestions. That text is transmitted to and processed by Google.</li>
+      <li><strong>AI image processing.</strong> DIY Decor AI sends the photos you upload to an AI backend to generate redesigned images.</li>
+      <li><strong>RevenueCat.</strong> Manages subscriptions and stores purchase-related data.</li>
+      <li><strong>Apple App Store.</strong> Distributes the Apps and processes all payments.</li>
+    </ul>
+    <p>Each provider processes data under its own privacy policy, and we encourage you to review them.</p>
+
+    <h2>05 — Data Retention</h2>
+    <p>We retain content only as long as needed to deliver your result; AI requests are processed in real time and are not stored long-term by us. Usage and diagnostic data is retained for a maximum of 90 days. Purchase records are retained as required by Apple and by applicable tax and accounting laws.</p>
+
+    <h2>06 — Children’s Privacy</h2>
+    <p>Our Apps are not directed to children under 13, and we do not knowingly collect personal information from children under 13, in compliance with the Children’s Online Privacy Protection Act (COPPA). If you believe a child has provided us with personal information, please contact us and we will delete it promptly.</p>
+
+    <h2>07 — California Residents (CCPA)</h2>
+    <p>If you are a California resident, the California Consumer Privacy Act (CCPA) gives you the right to know what personal information we collect, to request deletion of your personal information, and to opt out of the sale of personal information. <strong>We do not sell personal information.</strong> To exercise your rights, email us at <a href="mailto:arifin.yeasin@gmail.com">arifin.yeasin@gmail.com</a>. We will never discriminate against you for exercising your privacy rights.</p>
+
+    <h2>08 — Security</h2>
+    <p>We use reasonable technical and organizational measures to protect your information, including encrypted transmission (HTTPS) to third-party services. No method of transmission or storage is completely secure, however, and we cannot guarantee absolute security.</p>
+
+    <h2>09 — Changes to This Policy</h2>
+    <p>We may update this Privacy Policy from time to time. When we do, we will revise the “Effective” date above and, where appropriate, notify you within the Apps. Your continued use of the Apps after changes take effect constitutes acceptance of the updated policy.</p>
+
+    <h2>10 — Contact</h2>
+    <p>Questions or requests about your privacy? Email <a href="mailto:arifin.yeasin@gmail.com">arifin.yeasin@gmail.com</a>.</p>
+
+    <a class="back-home" href="index.html">← Back to home</a>
+  </main>
+
+  <footer class="footer" id="footer">
+    <span>© 2026 SanFlorence Digital LLC</span>
+    <span class="dot">·</span>
+    <a href="terms.html">Terms of Use</a>
+    <span class="dot">·</span>
+    <a href="privacy.html">Privacy Policy</a>
+  </footer>
+
+  <script>
+    (function () {
+      var root = document.documentElement;
+      var toggle = document.getElementById('themeToggle');
+      var KEY = 'sf-theme';
+      var SUN = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>';
+      var MOON = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
+      function systemDark() { return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches; }
+      function stored() { try { var t = localStorage.getItem(KEY); return (t === 'dark' || t === 'light') ? t : null; } catch (e) { return null; } }
+      function effective() { return stored() || (systemDark() ? 'dark' : 'light'); }
+      function paintIcon() { if (toggle) toggle.innerHTML = effective() === 'dark' ? SUN : MOON; }
+      paintIcon();
+      if (toggle) {
+        toggle.addEventListener('click', function () {
+          var next = effective() === 'dark' ? 'light' : 'dark';
+          root.setAttribute('data-theme', next);
+          try { localStorage.setItem(KEY, next); } catch (e) {}
+          paintIcon();
+        });
+      }
+      if (window.matchMedia) {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        var onChange = function () { if (!stored()) paintIcon(); };
+        if (mq.addEventListener) mq.addEventListener('change', onChange);
+        else if (mq.addListener) mq.addListener(onChange);
+      }
+    })();
+  </script>
+</body>
+</html>

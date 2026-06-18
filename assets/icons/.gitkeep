@@ -1,0 +1,4 @@
+# Place real 1024×1024 app icons here, displayed at 72px on the cards:
+#   mes-icon.png        — Mes (AI Tools for iMessage)
+#   diydecor-icon.png   — DIY Decor AI
+# Until added, the cards render gradient placeholder tiles.
