@@ -256,8 +256,13 @@
       transform: translateY(-8px);
       background: rgba(255, 255, 255, 0.18);
     }
-    .card-head { display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 1; }
-    .card-index { font-size: 12px; font-weight: 600; letter-spacing: 0.05em; color: rgba(255,255,255,0.7); font-variant-numeric: tabular-nums; }
+    /* arrow floats in the top-right corner so it no longer reserves a row */
+    .card-head {
+      position: absolute;
+      top: clamp(22px, 2.8vh, 30px);
+      right: clamp(22px, 2.8vh, 30px);
+      z-index: 2;
+    }
     .card-arrow {
       color: rgba(255,255,255,0.75);
       opacity: 0; transform: translate(-5px, 5px);
@@ -265,12 +270,13 @@
       display: inline-flex;
     }
     .card:hover .card-arrow { opacity: 1; transform: translate(0, 0); }
+    /* icon anchors the top; a fixed gap below it (no more auto-pushed dead space) */
     .card-icon {
       position: relative; z-index: 1;
       width: clamp(56px, 7.4vh, 74px);
       height: clamp(56px, 7.4vh, 74px);
       border-radius: 27%;
-      margin: clamp(16px, 2.4vh, 24px) 0 auto;
+      margin: clamp(6px, 1.2vh, 12px) 0 clamp(18px, 2.6vh, 24px);
       display: grid; place-items: center;
       color: #fff;
       background: linear-gradient(145deg, var(--g1, #888), var(--g2, #555));
@@ -279,11 +285,14 @@
     }
     .card:hover .card-icon { transform: scale(1.06) rotate(-2deg); }
     .card-icon svg { width: 48%; height: 48%; }
-    .card-cat { position: relative; z-index: 1; font-size: 10px; text-transform: uppercase; letter-spacing: 0.16em; color: rgba(255,255,255,0.7); margin-bottom: 8px; }
-    .card-name { position: relative; z-index: 1; font-weight: 600; font-size: clamp(21px, 2.7vh, 27px); line-height: 1.08; letter-spacing: -0.01em; }
-    .card-sub { position: relative; z-index: 1; font-size: 12px; color: rgba(255,255,255,0.7); margin-top: 3px; }
-    .card-tagline { position: relative; z-index: 1; font-size: 13px; line-height: 1.5; color: rgba(255,255,255,0.78); margin-top: 10px; }
-    .card-foot { position: relative; z-index: 1; margin-top: clamp(14px, 2vh, 20px); }
+    .card-icon img { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; display: block; box-shadow: 0 0 0 1px rgba(255,255,255,0.15); }
+    /* kicker → name → sub form one tight group; tagline a step below */
+    .card-cat { position: relative; z-index: 1; font-size: 10px; text-transform: uppercase; letter-spacing: 0.16em; color: rgba(255,255,255,0.66); margin-bottom: 7px; }
+    .card-name { position: relative; z-index: 1; font-weight: 600; font-size: clamp(21px, 2.7vh, 27px); line-height: 1.1; letter-spacing: -0.01em; }
+    .card-sub { position: relative; z-index: 1; font-size: 12px; color: rgba(255,255,255,0.7); margin-top: 5px; }
+    .card-tagline { position: relative; z-index: 1; font-size: 13px; line-height: 1.5; color: rgba(255,255,255,0.72); margin-top: 9px; }
+    /* CTA pinned to the bottom edge so every card's button aligns across the row */
+    .card-foot { position: relative; z-index: 1; margin-top: auto; }
     .card-store { display: inline-block; cursor: default; }
     .card-store img { display: block; height: 38px; width: auto; }
     .card-soon { font-size: 11px; text-transform: uppercase; letter-spacing: 0.16em; color: rgba(255,255,255,0.75); display: inline-flex; align-items: center; gap: 8px; }
@@ -390,21 +399,17 @@
           <!-- Card 1 — Mes -->
           <article class="card" style="--g1:#2E6BFF; --g2:#0026B8;">
             <div class="card-head">
-              <span class="card-index">01</span>
               <span class="card-arrow" aria-hidden="true">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>
               </span>
             </div>
             <div class="card-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 11.5a8.5 8.5 0 0 1-12.6 7.5L3.5 20.5l1.5-4.9A8.5 8.5 0 1 1 21 11.5Z"/>
-                <path d="m12 7 .85 2.15L15 10l-2.15.85L12 13l-.85-2.15L9 10l2.15-.85Z"/>
-              </svg>
+              <img src="assets/icons/mes.png" alt="Mes app icon" width="512" height="512" loading="lazy" decoding="async">
             </div>
-            <div class="card-cat">Productivity · iOS</div>
+            <div class="card-cat">Social Networking · iOS</div>
             <h2 class="card-name">Mes</h2>
             <div class="card-sub">AI Reply &amp; Translate for iMessage</div>
-            <p class="card-tagline">AI-powered replies, tones, and tools — right inside iMessage.</p>
+            <p class="card-tagline">AI replies, instant translation, polls, and more — without leaving iMessage.</p>
             <div class="card-foot">
               <a class="card-store" href="https://apps.apple.com/us/app/mes-ai-reply-translate/id6761229621" target="_blank" rel="noopener">
                 <img src="assets/badge-appstore.svg" alt="Download Mes on the App Store">
@@ -415,35 +420,27 @@
           <!-- Card 2 — Home Wedding Decor AI -->
           <article class="card" style="--g1:#FF7A3D; --g2:#D7330A;">
             <div class="card-head">
-              <span class="card-index">02</span>
               <span class="card-arrow" aria-hidden="true">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>
               </span>
             </div>
             <div class="card-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="4.5" width="18" height="15" rx="2.5"/>
-                <circle cx="8.5" cy="9.5" r="1.6"/>
-                <path d="M21 15.5 16 10.5 6.5 20"/>
-                <path d="m17.5 3 .6 1.5 1.5.6-1.5.6-.6 1.5-.6-1.5L15.4 5l1.5-.6Z"/>
-              </svg>
+              <img src="assets/icons/decor.png" alt="Home &amp; Wedding Decor AI app icon" width="512" height="512" loading="lazy" decoding="async">
             </div>
-            <div class="card-cat">Lifestyle · iOS</div>
-            <h2 class="card-name">Home Wedding Decor AI</h2>
-            <div class="card-sub">Home &amp; Wedding Decor with AI</div>
-            <p class="card-tagline">Reimagine any space — home or wedding. Point, shoot, transform.</p>
+            <div class="card-cat">Photo &amp; Video · iOS</div>
+            <h2 class="card-name">Home &amp; Wedding Decor AI</h2>
+            <div class="card-sub">AI room &amp; venue design</div>
+            <p class="card-tagline">See it redesigned, then DIY it.</p>
             <div class="card-foot">
               <a class="card-store" href="https://apps.apple.com/us/app/home-wedding-decor-ai/id6760288379" target="_blank" rel="noopener">
-                <img src="assets/badge-appstore.svg" alt="Download Home Wedding Decor AI on the App Store">
+                <img src="assets/badge-appstore.svg" alt="Download Home &amp; Wedding Decor AI on the App Store">
               </a>
             </div>
           </article>
 
           <!-- Card 3 — Coming soon -->
           <article class="card card-dimmed" style="--g1:#9A9A9A; --g2:#5A5A5A;">
-            <div class="card-head">
-              <span class="card-index">03</span>
-            </div>
+            <div class="card-head"></div>
             <div class="card-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="5" y="11" width="14" height="9" rx="2"/>
@@ -464,7 +461,7 @@
 
           <!-- Card 4 — Coming soon (placeholder) -->
           <article class="card card-dimmed" style="--g1:#8E8E8E; --g2:#555555;">
-            <div class="card-head"><span class="card-index">04</span></div>
+            <div class="card-head"></div>
             <div class="card-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
             </div>
@@ -482,7 +479,7 @@
 
           <!-- Card 5 — Coming soon (placeholder) -->
           <article class="card card-dimmed" style="--g1:#9C9488; --g2:#5C544A;">
-            <div class="card-head"><span class="card-index">05</span></div>
+            <div class="card-head"></div>
             <div class="card-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
             </div>
@@ -500,7 +497,7 @@
 
           <!-- Card 6 — Coming soon (placeholder) -->
           <article class="card card-dimmed" style="--g1:#8893A0; --g2:#515861;">
-            <div class="card-head"><span class="card-index">06</span></div>
+            <div class="card-head"></div>
             <div class="card-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
             </div>
@@ -518,7 +515,7 @@
 
           <!-- Card 7 — Coming soon (placeholder) -->
           <article class="card card-dimmed" style="--g1:#998E99; --g2:#565057;">
-            <div class="card-head"><span class="card-index">07</span></div>
+            <div class="card-head"></div>
             <div class="card-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
             </div>
