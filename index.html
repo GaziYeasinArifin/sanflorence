@@ -293,7 +293,8 @@
     .card-tagline { position: relative; z-index: 1; font-size: 13px; line-height: 1.5; color: rgba(255,255,255,0.72); margin-top: 9px; }
     /* CTA pinned to the bottom edge so every card's button aligns across the row */
     .card-foot { position: relative; z-index: 1; margin-top: auto; }
-    .card-store { display: inline-block; cursor: default; }
+    .card[data-href] { cursor: pointer; }
+    .card-store { display: inline-block; cursor: pointer; }
     .card-store img { display: block; height: 38px; width: auto; }
     .card-soon { font-size: 11px; text-transform: uppercase; letter-spacing: 0.16em; color: rgba(255,255,255,0.75); display: inline-flex; align-items: center; gap: 8px; }
     .card-dimmed { opacity: 0.72; }
@@ -397,7 +398,7 @@
         <div class="track">
 
           <!-- Card 1 — Mes -->
-          <article class="card" style="--g1:#2E6BFF; --g2:#0026B8;">
+          <article class="card" data-href="https://apps.apple.com/us/app/mes-ai-reply-translate/id6761229621" style="--g1:#2E6BFF; --g2:#0026B8;">
             <div class="card-head">
               <span class="card-arrow" aria-hidden="true">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>
@@ -418,7 +419,7 @@
           </article>
 
           <!-- Card 2 — Home Wedding Decor AI -->
-          <article class="card" style="--g1:#FF7A3D; --g2:#D7330A;">
+          <article class="card" data-href="https://apps.apple.com/us/app/home-wedding-decor-ai/id6760288379" style="--g1:#FF7A3D; --g2:#D7330A;">
             <div class="card-head">
               <span class="card-arrow" aria-hidden="true">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>
@@ -592,16 +593,17 @@
       if (!carousel) return;
       var track = carousel.querySelector('.track');
       var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      var isDown = false, startX = 0, startScroll = 0, velocity = 0, lastX = 0, lastT = 0, moved = 0, paused = false, fling = 0;
+      var isDown = false, startX = 0, startScroll = 0, velocity = 0, lastX = 0, lastT = 0, moved = 0, hovering = false, fling = 0;
       function now() { return performance.now(); }
       carousel.addEventListener('pointerdown', function (e) {
-        isDown = true; moved = 0; paused = true; fling = 0;
+        isDown = true; moved = 0; fling = 0;
         startX = e.clientX; startScroll = carousel.scrollLeft;
         lastX = e.clientX; lastT = now(); velocity = 0;
         carousel.classList.add('dragging');
         try { carousel.setPointerCapture(e.pointerId); } catch (err) {}
       });
       carousel.addEventListener('pointermove', function (e) {
+        if (e.pointerType === 'mouse') hovering = true;
         if (!isDown) return;
         var dx = e.clientX - startX;
         moved = Math.abs(dx);
@@ -614,20 +616,22 @@
         if (!isDown) return;
         isDown = false;
         carousel.classList.remove('dragging');
-        paused = false;
         fling = reduceMotion ? 0 : -velocity * 16; // hand momentum to the marquee loop
       }
       carousel.addEventListener('pointerup', endDrag);
       carousel.addEventListener('pointercancel', endDrag);
       carousel.addEventListener('click', function (e) {
-        if (moved > 5) { e.preventDefault(); e.stopPropagation(); }
+        if (moved > 5) { e.preventDefault(); e.stopPropagation(); return; } // a drag, not a click
+        if (e.target.closest('a')) return;                                  // the App Store badge navigates itself
+        var card = e.target.closest('.card[data-href]');
+        if (card) window.open(card.getAttribute('data-href'), '_blank', 'noopener');
       }, true);
 
       if (reduceMotion || !track) return; // static padded carousel when motion is reduced
 
       // ---- seamless auto-scroll marquee (right -> left); pauses on hover/drag ----
-      carousel.addEventListener('pointerenter', function () { paused = true; });
-      carousel.addEventListener('pointerleave', function () { paused = false; });
+      carousel.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse') hovering = true; });
+      carousel.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') hovering = false; });
       var gap = parseFloat(getComputedStyle(track).columnGap) || 20;
       var loopWidth = 0;
       function setup() {
@@ -658,10 +662,14 @@
         if (isDown) {
           pos = carousel.scrollLeft;          // follow the drag
         } else {
-          if (!paused) pos += SPEED;          // base auto-advance (right -> left)
-          pos += fling + scrollBoost;         // fling momentum + vertical-scroll drive
+          if (hovering) {
+            scrollBoost = 0;                   // hover = stop: no auto-advance, ignore page-scroll energy
+          } else {
+            pos += SPEED + scrollBoost;        // base auto-advance (right -> left) + vertical-scroll drive
+            scrollBoost *= 0.90; if (Math.abs(scrollBoost) < 0.02) scrollBoost = 0;
+          }
+          pos += fling;                        // drag momentum always settles out, even into a hover
           fling *= 0.93; if (Math.abs(fling) < 0.05) fling = 0;
-          scrollBoost *= 0.90; if (Math.abs(scrollBoost) < 0.02) scrollBoost = 0;
           if (loopWidth > 0) { pos = pos % loopWidth; if (pos < 0) pos += loopWidth; }
           carousel.scrollLeft = pos;
         }
