@@ -809,11 +809,11 @@
       setup();
       var SPEED = 0.56;     // px per frame (~34 px/s) — 2x base
       var pos = 0;          // float accumulator — avoids sub-pixel scrollLeft stalling
-      var scrollBoost = 0;  // vertical-scroll energy: speeds up (down) / reverses (up)
+      var scrollBoost = 0;  // vertical-scroll energy: a quick nudge that fades fast (no lingering stall)
       window.addEventListener('wheel', function (e) {
-        scrollBoost += e.deltaY * 0.05;
-        if (scrollBoost > 32) scrollBoost = 32;
-        else if (scrollBoost < -32) scrollBoost = -32;
+        scrollBoost += e.deltaY * 0.04;
+        if (scrollBoost > 18) scrollBoost = 18;
+        else if (scrollBoost < -18) scrollBoost = -18;
       }, { passive: true });
       (function loop() {
         if (isDown) {
@@ -823,7 +823,7 @@
             scrollBoost = 0;                   // hover = stop: no auto-advance, ignore page-scroll energy
           } else {
             pos += SPEED + scrollBoost;        // base auto-advance (right -> left) + vertical-scroll drive
-            scrollBoost *= 0.90; if (Math.abs(scrollBoost) < 0.02) scrollBoost = 0;
+            scrollBoost *= 0.82; if (Math.abs(scrollBoost) < 0.05) scrollBoost = 0; // fades fast — no 2s stall
           }
           pos += fling;                        // drag momentum always settles out, even into a hover
           fling *= 0.93; if (Math.abs(fling) < 0.05) fling = 0;
