@@ -221,11 +221,13 @@
       padding-left: 0;
       padding-right: 0;
       overflow-x: hidden;          /* transform drives the strip on the compositor; no native scroll */
+      touch-action: pan-y;         /* vertical page-scroll passes through; we handle horizontal drag */
+      cursor: grab;
       -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 var(--pad-x), #000 calc(100% - var(--pad-x)), transparent);
       mask-image: linear-gradient(90deg, transparent 0, #000 var(--pad-x), #000 calc(100% - var(--pad-x)), transparent);
     }
     .carousel::-webkit-scrollbar { display: none; }
-    .carousel.dragging { cursor: default; }
+    .carousel.dragging { cursor: grabbing; }
     .track { display: flex; gap: clamp(16px, 1.6vw, 24px); width: max-content; will-change: transform; }
     .card {
       position: relative;
@@ -735,23 +737,49 @@
       if (!carousel) return;
       var track = carousel.querySelector('.track');
       var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      var hovering = false, moved = 0, downX = 0, isDown = false;
-      carousel.addEventListener('pointerdown', function (e) { isDown = true; moved = 0; downX = e.clientX; });
-      carousel.addEventListener('pointermove', function (e) {
-        if (e.pointerType === 'mouse') { hovering = true; kick(); }
-        if (isDown) moved = Math.max(moved, Math.abs(e.clientX - downX));
+      var hovering = false, moved = 0, isDown = false;
+      var dragStartX = 0, dragFrom = 0, dragOffset = 0, dragVel = 0, dragLastX = 0, dragLastT = 0;
+      carousel.addEventListener('pointerdown', function (e) {
+        isDown = true; moved = 0;
+        dragStartX = e.clientX; dragOffset = dragFrom = anim ? currentX() : 0;
+        dragVel = 0; dragLastX = e.clientX; dragLastT = performance.now();
+        if (anim) {                                   // hand the strip to the finger
+          try { anim.pause(); } catch (err) {}
+          carousel.classList.add('dragging');
+          try { carousel.setPointerCapture(e.pointerId); } catch (err) {}
+        }
       });
-      function endDrag() { isDown = false; }
+      carousel.addEventListener('pointermove', function (e) {
+        if (e.pointerType === 'mouse' && !isDown) { hovering = true; kick(); }
+        if (!isDown) return;
+        var dx = e.clientX - dragStartX;
+        moved = Math.max(moved, Math.abs(dx));
+        if (!anim) return;                            // reduce-motion: native scroll handles it
+        dragOffset = dragFrom + dx;                   // follow the finger — left or right, 1:1
+        showAt(dragOffset);                           // drive the paused compositor animation to that position
+        var t = performance.now(), dt = t - dragLastT;
+        if (dt > 0) dragVel = (e.clientX - dragLastX) / dt;   // px/ms, for release momentum
+        dragLastX = e.clientX; dragLastT = t;
+      });
+      function endDrag() {
+        if (!isDown) return;
+        isDown = false;
+        if (!anim) return;
+        carousel.classList.remove('dragging');
+        var relRate = -dragVel * 1000 / PX_PER_S;     // continue in the flung direction...
+        relRate = Math.max(-9, Math.min(9, relRate));
+        if (Math.abs(relRate) > 1.3) { rate = relRate; boost = relRate - 1; } // ...then ease back to auto
+        resumeFrom(dragOffset);
+        kick();
+      }
       carousel.addEventListener('pointerup', endDrag);
       carousel.addEventListener('pointercancel', endDrag);
       carousel.addEventListener('click', function (e) {
-        if (moved > 10) { e.preventDefault(); e.stopPropagation(); return; } // a real drag, not a click
+        if (moved > 8) { e.preventDefault(); e.stopPropagation(); return; } // a drag, not a tap
         var card = e.target.closest('.card[data-href]');
         if (!card) return;                          // coming-soon cards: nothing to open
         e.preventDefault();                          // take over nav for the whole card AND the badge
-        var url = card.getAttribute('data-href');
-        var win = window.open(url, '_blank', 'noopener');
-        if (!win) window.location.href = url;        // popup blocked -> same-tab fallback
+        window.open(card.getAttribute('data-href'), '_blank', 'noopener,noreferrer'); // NEW TAB ONLY
       }, true);
 
       if (reduceMotion || !track) return; // static padded carousel when motion is reduced
@@ -817,6 +845,22 @@
           { duration: durMs, iterations: Infinity, easing: 'linear' }
         );
         try { anim.playbackRate = prevRate; } catch (e) {}
+      }
+      function currentX() {                            // the strip's live translateX, even mid-animation
+        var tr = getComputedStyle(track).transform;
+        if (!tr || tr === 'none') return 0;
+        try { return new DOMMatrix(tr).m41; }
+        catch (e) { var a = (tr.match(/\(([^)]+)\)/) || [0, ''])[1].split(','); return parseFloat(a[a.length === 6 ? 4 : 12]) || 0; }
+      }
+      function showAt(X) {                              // drive the (paused) animation to translateX = X
+        if (!anim || !loopWidth || !durMs) return;     // (inline transform can't be used: a paused
+        var frac = ((((-X) % loopWidth) + loopWidth) % loopWidth) / loopWidth;  // animation still wins the cascade)
+        try { anim.currentTime = frac * durMs; } catch (e) {}
+      }
+      function resumeFrom(X) {                          // hand the dragged position back to the compositor loop
+        if (!anim) return;
+        showAt(X);
+        try { anim.playbackRate = rate; anim.play(); } catch (e) {}
       }
       carousel.classList.add('marquee');
       build();
