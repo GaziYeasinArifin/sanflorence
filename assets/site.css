@@ -51,7 +51,7 @@ body::before {
   text-decoration: none; color: #fff;
   font-size: 13px; letter-spacing: 0.02em; font-weight: 600;
 }
-.diamond { color: #fff; font-size: 10px; line-height: 1; transform: translateY(-1px); }
+.nav-logo { width: 24px; height: 24px; border-radius: 6px; display: block; flex-shrink: 0; }
 .nav-right { display: flex; align-items: center; gap: clamp(16px, 2vw, 28px); }
 .nav-link {
   position: relative;
