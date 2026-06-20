@@ -149,6 +149,7 @@
     .menu-foot { margin-top: clamp(28px, 6vh, 56px); font-size: 12px; color: var(--fg-muted); opacity: 0; transition: opacity 0.5s ease 0.4s; }
     .menu.open .menu-foot { opacity: 1; }
     body.menu-open { overflow: hidden; }
+    body.menu-open .nav { z-index: 300; } /* lift nav (with its X close button) above the open menu */
 
     /* ---- Home main column ---- */
     .home-main {
@@ -360,16 +361,18 @@
     .hero-line { position: relative; z-index: 2; }
 
     /* "Apps" -> full "Mes: AI Reply & Translate" on one line, one size (fit to width by JS) */
-    .hero-swap {
+    .hero-swap, .hero-swap-decor, .hero-swap-soon {
       position: absolute; left: var(--pad-x); bottom: clamp(10px, 2vh, 24px); z-index: 3;
       white-space: nowrap; font-weight: 600; line-height: 1; letter-spacing: -0.02em;
       color: #fff; opacity: 0; pointer-events: none;
       transition: opacity 0.55s ease;
     }
     .hero-title canvas { transition: opacity 0.55s ease; }
-    body.mes-mode .hero-title canvas { opacity: 0; }
-    body.mes-mode .hero-title { color: transparent; }
+    body.mes-mode .hero-title canvas, body.decor-mode .hero-title canvas, body.soon-mode .hero-title canvas { opacity: 0; }
+    body.mes-mode .hero-title, body.decor-mode .hero-title, body.soon-mode .hero-title { color: transparent; }
     body.mes-mode .hero-swap { opacity: 1; }
+    body.decor-mode .hero-swap-decor { opacity: 1; }
+    body.soon-mode .hero-swap-soon { opacity: 1; }
 
     /* wordmark stays "SanFlorence" in mes mode (no swap) */
 
@@ -380,7 +383,7 @@
       -webkit-backdrop-filter: none;
       border-color: rgba(255, 255, 255, 0.16);
     }
-    body.mes-mode .card:hover::before {
+    body.mes-mode .card:hover::before, body.decor-mode .card:hover::before, body.soon-mode .card:hover::before {
       background: none;
       opacity: 1;
       backdrop-filter: blur(30px) saturate(160%);
@@ -391,7 +394,7 @@
 
     /* tagline disappears in mes mode */
     .hero-line { transition: opacity 0.5s ease; }
-    body.mes-mode .hero-line { opacity: 0; }
+    body.mes-mode .hero-line, body.decor-mode .hero-line, body.soon-mode .hero-line { opacity: 0; }
 
     /* dreamy iMessage bubbles drifting up through the dark lower background */
     .mes-bubbles {
@@ -433,6 +436,65 @@
       82%  { opacity: 0.66; }
       100% { transform: translateY(-14vh); opacity: 0; }
     }
+
+    /* DECOR MODE — warm "redesign" takeover on the Home & Wedding Decor card */
+    body.decor-mode .card:hover {
+      background: linear-gradient(180deg, rgba(18,8,2,0.92) 0%, rgba(40,20,6,0.58) 50%, rgba(150,95,40,0.12) 100%);
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      border-color: rgba(255, 226, 196, 0.22);
+    }
+    .decor-bits {
+      position: fixed; inset: 0; z-index: 0;
+      pointer-events: none; overflow: hidden;
+      opacity: 0; transition: opacity 0.6s ease;
+    }
+    body.decor-mode .decor-bits { opacity: 1; }
+    .swatch {
+      position: absolute; top: 0;
+      border-radius: 12px;
+      opacity: 0;
+      box-shadow: 0 16px 40px -18px rgba(40,18,0,0.6);
+      animation: rise 18s linear infinite;
+      animation-play-state: paused;
+      will-change: transform, opacity;
+    }
+    body.decor-mode .swatch { animation-play-state: running; }
+    .swatch.mid { filter: blur(2px); }
+    .swatch.far { filter: blur(6px); animation-name: rise-soft; }
+    .swatch.palette { display: inline-flex; gap: 7px; padding: 12px; background: rgba(244,236,224,0.95); border-radius: 16px; }
+    .swatch.palette i { width: 16px; height: 16px; border-radius: 50%; display: block; }
+
+    /* SOON MODE — violet "in the studio" takeover on the upcoming-app cards */
+    body.soon-mode .card:hover {
+      background: linear-gradient(180deg, rgba(8,3,20,0.93) 0%, rgba(20,8,42,0.6) 50%, rgba(80,50,140,0.12) 100%);
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      border-color: rgba(214, 196, 255, 0.22);
+    }
+    .soon-bits {
+      position: fixed; inset: 0; z-index: 0;
+      pointer-events: none; overflow: hidden;
+      opacity: 0; transition: opacity 0.6s ease;
+    }
+    body.soon-mode .soon-bits { opacity: 1; }
+    .star {
+      position: absolute; top: 0; opacity: 0;
+      animation: rise 20s linear infinite;
+      animation-play-state: paused;
+      will-change: transform, opacity;
+    }
+    body.soon-mode .star { animation-play-state: running; }
+    .star.far { animation-name: rise-soft; filter: blur(1.5px); }
+    .star i {
+      display: block; width: 100%; height: 100%; border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 0 10px 2px rgba(214,196,255,0.85), 0 0 24px 7px rgba(150,110,255,0.45);
+      animation: twinkle 3.2s ease-in-out infinite;
+    }
+    .soon-bits .star:nth-child(2n) i { animation-delay: -1.4s; }
+    .soon-bits .star:nth-child(3n) i { animation-delay: -2.6s; }
+    @keyframes twinkle { 0%, 100% { opacity: 0.35; transform: scale(0.7); } 50% { opacity: 1; transform: scale(1.15); } }
   </style>
 </head>
 <body class="home">
@@ -453,6 +515,35 @@
     <span class="bubble sent far" style="left:93%; font-size:18px; animation-duration:26s; animation-delay:-13s;">🎉</span>
   </div>
 
+  <!-- floating design swatches for "Decor mode" — a mood board drifting up -->
+  <div class="decor-bits" aria-hidden="true">
+    <span class="swatch far" style="left:5%;  width:64px; height:64px; background:#C46A4A; animation-duration:22s; animation-delay:-3s;"></span>
+    <span class="swatch mid" style="left:14%; width:52px; height:72px; background:#93A188; animation-duration:18s; animation-delay:-11s;"></span>
+    <span class="swatch palette mid" style="left:23%; animation-duration:20s; animation-delay:-6s;"><i style="background:#C46A4A"></i><i style="background:#ECDFC8"></i><i style="background:#8F8B5E"></i><i style="background:#7A5640"></i></span>
+    <span class="swatch far" style="left:35%; width:78px; height:60px; background:#7E9AAE; animation-duration:24s; animation-delay:-15s;"></span>
+    <span class="swatch mid" style="left:46%; width:58px; height:58px; background:#D6A14C; animation-duration:17s; animation-delay:-4s;"></span>
+    <span class="swatch far" style="left:57%; width:66px; height:86px; background:#E0B7AC; animation-duration:23s; animation-delay:-9s;"></span>
+    <span class="swatch palette far" style="left:69%; animation-duration:25s; animation-delay:-13s;"><i style="background:#7E9AAE"></i><i style="background:#ECDFC8"></i><i style="background:#D6A14C"></i><i style="background:#3E3A36"></i></span>
+    <span class="swatch mid" style="left:80%; width:54px; height:54px; background:#8F8B5E; animation-duration:16s; animation-delay:-2s;"></span>
+    <span class="swatch far" style="left:88%; width:74px; height:64px; background:#7A5640; animation-duration:21s; animation-delay:-8s;"></span>
+    <span class="swatch mid" style="left:95%; width:48px; height:62px; background:#ECDFC8; animation-duration:19s; animation-delay:-17s;"></span>
+  </div>
+
+  <!-- twinkling stardust for "Coming Soon" mode — something taking shape -->
+  <div class="soon-bits" aria-hidden="true">
+    <span class="star far" style="left:6%;  width:9px;  height:9px;  animation-duration:24s; animation-delay:-2s;"><i></i></span>
+    <span class="star"     style="left:15%; width:13px; height:13px; animation-duration:18s; animation-delay:-10s;"><i></i></span>
+    <span class="star far" style="left:24%; width:7px;  height:7px;  animation-duration:26s; animation-delay:-6s;"><i></i></span>
+    <span class="star"     style="left:33%; width:16px; height:16px; animation-duration:15s; animation-delay:-13s;"><i></i></span>
+    <span class="star far" style="left:43%; width:8px;  height:8px;  animation-duration:23s; animation-delay:-4s;"><i></i></span>
+    <span class="star"     style="left:53%; width:11px; height:11px; animation-duration:19s; animation-delay:-16s;"><i></i></span>
+    <span class="star far" style="left:63%; width:9px;  height:9px;  animation-duration:25s; animation-delay:-8s;"><i></i></span>
+    <span class="star"     style="left:72%; width:14px; height:14px; animation-duration:17s; animation-delay:-1s;"><i></i></span>
+    <span class="star far" style="left:82%; width:7px;  height:7px;  animation-duration:22s; animation-delay:-12s;"><i></i></span>
+    <span class="star"     style="left:90%; width:12px; height:12px; animation-duration:20s; animation-delay:-5s;"><i></i></span>
+    <span class="star far" style="left:96%; width:8px;  height:8px;  animation-duration:27s; animation-delay:-15s;"><i></i></span>
+  </div>
+
   <!-- ===================== NAV ===================== -->
   <nav class="nav">
     <a class="nav-brand" href="index.html" aria-label="SanFlorence Digital — home">
@@ -463,7 +554,7 @@
       <a class="nav-link" href="faq.html">FAQ</a>
       <a class="nav-link" href="terms.html">Terms</a>
       <a class="nav-link" href="privacy.html">Privacy</a>
-      <a class="nav-link" href="mailto:arifin.yeasin@gmail.com">Contact</a>
+      <a class="nav-link" href="contact.html">Contact</a>
     </div>
     <button class="nav-burger" id="navBurger" type="button" aria-label="Open menu" aria-expanded="false">
       <span></span><span></span>
@@ -476,7 +567,7 @@
       <a href="faq.html">FAQ</a>
       <a href="terms.html">Terms of Use</a>
       <a href="privacy.html">Privacy Policy</a>
-      <a href="mailto:arifin.yeasin@gmail.com">Contact</a>
+      <a href="contact.html">Contact</a>
     </nav>
     <div class="menu-foot">© 2026 SanFlorence Digital LLC</div>
   </div>
@@ -486,6 +577,8 @@
     <!-- ===================== HERO ===================== -->
     <header class="hero">
       <div class="hero-swap" aria-hidden="true">Mes iMessage App</div>
+      <div class="hero-swap-decor" aria-hidden="true">Redesign Anything</div>
+      <div class="hero-swap-soon" aria-hidden="true">Coming Soon</div>
       <h1 class="hero-title">Apps</h1>
       <p class="hero-line" aria-label="Thoughtful apps, crafted with love in the SF Bay Area."><span class="hl-text">Thoughtful apps, crafted with love in the SF Bay Area.</span><span class="hl-caret" aria-hidden="true"></span></p>
     </header>
@@ -516,7 +609,7 @@
           </article>
 
           <!-- Card 2 — Home Wedding Decor AI -->
-          <article class="card" data-href="https://apps.apple.com/us/app/home-wedding-decor-ai/id6760288379" style="--g1:#FF7A3D; --g2:#D7330A;">
+          <article class="card" data-app="decor" data-href="https://apps.apple.com/us/app/home-wedding-decor-ai/id6760288379" style="--g1:#FF7A3D; --g2:#D7330A;">
             <div class="card-head">
               <span class="card-arrow" aria-hidden="true">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>
@@ -537,7 +630,7 @@
           </article>
 
           <!-- Card 3 — Coming soon -->
-          <article class="card card-dimmed" style="--g1:#9A9A9A; --g2:#5A5A5A;">
+          <article class="card card-dimmed" data-app="soon" style="--g1:#9A9A9A; --g2:#5A5A5A;">
             <div class="card-head"></div>
             <div class="card-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
@@ -558,7 +651,7 @@
           </article>
 
           <!-- Card 4 — Coming soon (placeholder) -->
-          <article class="card card-dimmed" style="--g1:#8E8E8E; --g2:#555555;">
+          <article class="card card-dimmed" data-app="soon" style="--g1:#8E8E8E; --g2:#555555;">
             <div class="card-head"></div>
             <div class="card-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
@@ -591,7 +684,7 @@
         <a href="faq.html">FAQ</a>
         <a href="terms.html">Terms of Use</a>
         <a href="privacy.html">Privacy Policy</a>
-        <a href="mailto:arifin.yeasin@gmail.com">Contact</a>
+        <a href="contact.html">Contact</a>
       </nav>
     </footer>
 
@@ -679,14 +772,23 @@
       carousel.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse') hovering = true; });
       carousel.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') hovering = false; });
 
-      // ---- Mes card hover takes over the hero ("mes mode") ----
-      carousel.addEventListener('mouseover', function (e) {
-        if (e.target.closest && e.target.closest('[data-app="mes"]')) document.body.classList.add('mes-mode');
-      });
-      carousel.addEventListener('mouseout', function (e) {
-        var to = e.relatedTarget;
-        if (!to || !to.closest || !to.closest('[data-app="mes"]')) document.body.classList.remove('mes-mode');
-      });
+      // ---- hovering an app card takes over the hero (per-app "mode") — hover-capable (desktop) only ----
+      if (window.matchMedia && window.matchMedia('(hover: hover)').matches) {
+        carousel.addEventListener('mouseover', function (e) {
+          var card = e.target.closest && e.target.closest('[data-app]');
+          if (!card) return;
+          var app = card.getAttribute('data-app');
+          document.body.classList.toggle('mes-mode', app === 'mes');
+          document.body.classList.toggle('decor-mode', app === 'decor');
+          document.body.classList.toggle('soon-mode', app === 'soon');
+        });
+        carousel.addEventListener('mouseout', function (e) {
+          var to = e.relatedTarget;
+          if (!to || !to.closest || !to.closest('[data-app]')) {
+            document.body.classList.remove('mes-mode', 'decor-mode', 'soon-mode');
+          }
+        });
+      }
       var gap = parseFloat(getComputedStyle(track).columnGap) || 20;
       var loopWidth = 0;
       function setup() {
@@ -751,7 +853,7 @@
       var FS = [
         'precision highp float;',
         'varying vec2 uv;',
-        'uniform vec2 res; uniform float time; uniform float blue;',
+        'uniform vec2 res; uniform float time; uniform float blue; uniform float warm; uniform float purple;',
         'float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1,311.7)))*43758.5453123); }',
         'float vnoise(vec2 p){ vec2 i=floor(p), f=fract(p); float a=hash(i),b=hash(i+vec2(1.,0.)),c=hash(i+vec2(0.,1.)),d=hash(i+vec2(1.,1.)); vec2 u=f*f*(3.-2.*f); return mix(mix(a,b,u.x),mix(c,d,u.x),u.y); }',
         'float fbm(vec2 p){ float v=0.,a=.5; for(int i=0;i<3;i++){ v+=a*vnoise(p); p*=2.0; a*=.5; } return v; }',
@@ -764,6 +866,12 @@
         '  vec3 cDark = mix(vec3(0.40, 0.0, 0.05), vec3(0.02, 0.05, 0.30), blue);',
         '  vec3 cMid  = mix(vec3(0.86, 0.05, 0.13), vec3(0.05, 0.42, 0.98), blue);',
         '  vec3 cHot  = mix(vec3(1.0, 0.27, 0.15), vec3(0.40, 0.74, 1.0), blue);',
+        '  cDark = mix(cDark, vec3(0.34, 0.12, 0.02), warm);',
+        '  cMid  = mix(cMid,  vec3(0.93, 0.45, 0.10), warm);',
+        '  cHot  = mix(cHot,  vec3(1.0, 0.80, 0.34), warm);',
+        '  cDark = mix(cDark, vec3(0.05, 0.02, 0.20), purple);',
+        '  cMid  = mix(cMid,  vec3(0.24, 0.08, 0.66), purple);',
+        '  cHot  = mix(cHot,  vec3(0.52, 0.34, 0.95), purple);',
         '  vec3 col = mix(cDark, cMid, smoothstep(0.12, 0.55, n));',
         '  col = mix(col, cHot, smoothstep(0.5, 0.95, n));',
         '  float darken = smoothstep(0.08, 0.60, uv.y);',
@@ -781,7 +889,7 @@
       var buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]), gl.STATIC_DRAW);
       var ploc = gl.getAttribLocation(prog, 'p'); gl.enableVertexAttribArray(ploc); gl.vertexAttribPointer(ploc, 2, gl.FLOAT, false, 0, 0);
-      var U = {}; ['res', 'time', 'blue'].forEach(function (n) { U[n] = gl.getUniformLocation(prog, n); });
+      var U = {}; ['res', 'time', 'blue', 'warm', 'purple'].forEach(function (n) { U[n] = gl.getUniformLocation(prog, n); });
 
       function resize() {
         canvas.width = Math.max(1, Math.round(window.innerWidth * SCALE));
@@ -792,14 +900,18 @@
       var rt; window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(resize, 150); });
 
       var t0 = performance.now();
-      var mesBlue = 0;
+      var mesBlue = 0, decorWarm = 0, soonPurple = 0;
       function frame() {
         var time = (performance.now() - t0) / 1000;
         mesBlue += ((document.body.classList.contains('mes-mode') ? 1 : 0) - mesBlue) * 0.05;
+        decorWarm += ((document.body.classList.contains('decor-mode') ? 1 : 0) - decorWarm) * 0.05;
+        soonPurple += ((document.body.classList.contains('soon-mode') ? 1 : 0) - soonPurple) * 0.05;
         gl.useProgram(prog);
         gl.uniform2f(U.res, canvas.width, canvas.height);
         gl.uniform1f(U.time, reduce ? 0.0 : time);
         gl.uniform1f(U.blue, mesBlue);
+        gl.uniform1f(U.warm, decorWarm);
+        gl.uniform1f(U.purple, soonPurple);
         gl.drawArrays(gl.TRIANGLES, 0, 6);
         if (!reduce) requestAnimationFrame(frame);
       }
@@ -1117,20 +1229,19 @@
       if (hl) makeLiquid(hl, { typewriter: true });
     })();
 
-    /* MES MODE — size "Mes iMessage App" to ~20% under the full-name fit, one line */
+    /* HERO TITLE SWAPS — size "Mes iMessage App" and "Redesign Anything" to the SAME one-line size */
     (function () {
-      var el = document.querySelector('.hero-swap');
       var hero = document.querySelector('.hero');
-      if (!el || !hero) return;
+      var els = [].slice.call(document.querySelectorAll('.hero-swap, .hero-swap-decor, .hero-swap-soon'));
+      if (!hero || !els.length) return;
+      function fitWidth(el, avail) { el.style.fontSize = '100px'; var w = el.scrollWidth || 1; return 100 * (avail / w) * 0.96; }
       function fit() {
         var cs = getComputedStyle(hero);
         var avail = hero.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
-        el.style.fontSize = '100px';
-        el.textContent = 'Mes: AI Reply & Translate';
-        var refW = el.scrollWidth || 1;
-        var refSize = 100 * (avail / refW) * 0.98;
-        el.textContent = 'Mes iMessage App';
-        el.style.fontSize = Math.max(16, refSize * 0.8) + 'px';
+        var size = 92;
+        els.forEach(function (el) { size = Math.min(size, fitWidth(el, avail)); });
+        size = Math.max(16, size) + 'px';
+        els.forEach(function (el) { el.style.fontSize = size; });
       }
       if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit); else fit();
       var rt2; window.addEventListener('resize', function () { clearTimeout(rt2); rt2 = setTimeout(fit, 150); });

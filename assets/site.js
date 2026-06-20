@@ -50,4 +50,32 @@
       }
     });
   });
+
+  // ---- contact form (opens a pre-filled email — no backend needed) ----
+  var cform = document.getElementById('contactForm');
+  if (cform) {
+    cform.addEventListener('submit', function (e) {
+      e.preventDefault();
+      function val(id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; }
+      var name = val('cf-name'), email = val('cf-email'), company = val('cf-company');
+      var topicEl = document.getElementById('cf-topic');
+      var topic = topicEl ? topicEl.value : 'General enquiry';
+      var message = val('cf-message');
+      var status = document.getElementById('cf-status');
+      if (!name || !email || !message) {
+        if (status) status.textContent = 'Please add your name, email, and a message.';
+        return;
+      }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        if (status) status.textContent = 'Please enter a valid email address.';
+        return;
+      }
+      var subject = '[SanFlorence] ' + topic + ' — ' + name;
+      var lines = ['Name: ' + name, 'Email: ' + email];
+      if (company) lines.push('Company: ' + company);
+      lines.push('Topic: ' + topic, '', message);
+      window.location.href = 'mailto:hisanflorence@gmail.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(lines.join('\n'));
+      if (status) status.textContent = 'Opening your email app to send…';
+    });
+  }
 })();
