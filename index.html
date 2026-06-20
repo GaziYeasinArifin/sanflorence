@@ -22,7 +22,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
     /* ============================================================
@@ -596,7 +596,7 @@
               </span>
             </div>
             <div class="card-icon">
-              <img src="assets/icons/mes.png" alt="Mes app icon" width="512" height="512" loading="lazy" decoding="async">
+              <img src="assets/icons/mes.png" alt="Mes app icon" width="256" height="256" loading="eager" decoding="async">
             </div>
             <div class="card-cat">Social Networking · iOS</div>
             <h2 class="card-name">Mes: AI Reply &amp; Translate</h2>
@@ -616,7 +616,7 @@
               </span>
             </div>
             <div class="card-icon">
-              <img src="assets/icons/decor.png" alt="Home &amp; Wedding Decor AI app icon" width="512" height="512" loading="lazy" decoding="async">
+              <img src="assets/icons/decor.png" alt="Home &amp; Wedding Decor AI app icon" width="256" height="256" loading="eager" decoding="async">
             </div>
             <div class="card-cat">Photo &amp; Video · iOS</div>
             <h2 class="card-name">Home &amp; Wedding Decor AI</h2>
@@ -807,31 +807,35 @@
       }
       carousel.classList.add('marquee');
       setup();
-      var SPEED = 0.56;     // px per frame (~34 px/s) — 2x base
-      var pos = 0;          // float accumulator — avoids sub-pixel scrollLeft stalling
-      var scrollBoost = 0;  // vertical-scroll energy: speeds up (down) / reverses (up)
+      var PX_PER_S = 68;    // gentle auto-scroll speed (px/s), constant at any frame rate
+      var pos = 0;
+      var pending = 0;      // scroll travel still to apply (px, signed). Drains smoothly each frame so the
+                            // strip tracks the gesture exactly: slow/fast, forward/backward, butter smooth.
       window.addEventListener('wheel', function (e) {
-        scrollBoost += e.deltaY * 0.05;
-        if (scrollBoost > 32) scrollBoost = 32;
-        else if (scrollBoost < -32) scrollBoost = -32;
+        pending += e.deltaY * 0.85;                         // vertical scroll distance -> horizontal travel
+        if (pending > 1400) pending = 1400;                 // bound a pathological fling
+        else if (pending < -1400) pending = -1400;
       }, { passive: true });
-      (function loop() {
+      var prevT = now();
+      (function loop(ts) {
+        var dt = Math.min(ts - prevT, 50); prevT = ts;     // clamp tab-switch / GC pauses
+        var s = dt / 1000;                                  // seconds elapsed this frame
         if (isDown) {
-          pos = carousel.scrollLeft;          // follow the drag
+          pos = carousel.scrollLeft;
         } else {
-          if (hovering) {
-            scrollBoost = 0;                   // hover = stop: no auto-advance, ignore page-scroll energy
-          } else {
-            pos += SPEED + scrollBoost;        // base auto-advance (right -> left) + vertical-scroll drive
-            scrollBoost *= 0.90; if (Math.abs(scrollBoost) < 0.02) scrollBoost = 0;
-          }
-          pos += fling;                        // drag momentum always settles out, even into a hover
-          fling *= 0.93; if (Math.abs(fling) < 0.05) fling = 0;
+          if (!hovering) pos += PX_PER_S * s;               // steady auto-advance (paused on hover)
+          var keep = Math.exp(-s / 0.10);                   // 100ms ease — wheel notches become fluid glide
+          var step = pending * (1 - keep);                  // drain a slice of the gesture this frame
+          pos += step; pending -= step;
+          if (Math.abs(pending) < 0.05) pending = 0;
+          pos += fling;                                     // drag-release momentum
+          fling *= Math.pow(0.003, s);
+          if (Math.abs(fling) < 0.1) fling = 0;
           if (loopWidth > 0) { pos = pos % loopWidth; if (pos < 0) pos += loopWidth; }
           carousel.scrollLeft = pos;
         }
         requestAnimationFrame(loop);
-      })();
+      })(now());
       if (document.fonts && document.fonts.ready) document.fonts.ready.then(setup);
       var rt; window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(setup, 200); });
     })();
@@ -902,17 +906,19 @@
       var t0 = performance.now();
       var mesBlue = 0, decorWarm = 0, soonPurple = 0;
       function frame() {
-        var time = (performance.now() - t0) / 1000;
-        mesBlue += ((document.body.classList.contains('mes-mode') ? 1 : 0) - mesBlue) * 0.05;
-        decorWarm += ((document.body.classList.contains('decor-mode') ? 1 : 0) - decorWarm) * 0.05;
-        soonPurple += ((document.body.classList.contains('soon-mode') ? 1 : 0) - soonPurple) * 0.05;
-        gl.useProgram(prog);
-        gl.uniform2f(U.res, canvas.width, canvas.height);
-        gl.uniform1f(U.time, reduce ? 0.0 : time);
-        gl.uniform1f(U.blue, mesBlue);
-        gl.uniform1f(U.warm, decorWarm);
-        gl.uniform1f(U.purple, soonPurple);
-        gl.drawArrays(gl.TRIANGLES, 0, 6);
+        if (!document.hidden) {
+          var time = (performance.now() - t0) / 1000;
+          mesBlue += ((document.body.classList.contains('mes-mode') ? 1 : 0) - mesBlue) * 0.05;
+          decorWarm += ((document.body.classList.contains('decor-mode') ? 1 : 0) - decorWarm) * 0.05;
+          soonPurple += ((document.body.classList.contains('soon-mode') ? 1 : 0) - soonPurple) * 0.05;
+          gl.useProgram(prog);
+          gl.uniform2f(U.res, canvas.width, canvas.height);
+          gl.uniform1f(U.time, reduce ? 0.0 : time);
+          gl.uniform1f(U.blue, mesBlue);
+          gl.uniform1f(U.warm, decorWarm);
+          gl.uniform1f(U.purple, soonPurple);
+          gl.drawArrays(gl.TRIANGLES, 0, 6);
+        }
         if (!reduce) requestAnimationFrame(frame);
       }
       requestAnimationFrame(frame);
@@ -970,7 +976,7 @@
           c2.fillStyle = '#fff';
           c2.fillText(WORD, 0, cssH / 2 + fontPx * 0.04);
         }
-        if (document.fonts && document.fonts.load) document.fonts.load('700 100px Outfit').then(draw, draw); else draw();
+        if (document.fonts && document.fonts.ready) document.fonts.ready.then(draw, draw); else draw();
         var rt; window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(draw, 150); });
       }
 
@@ -1047,29 +1053,37 @@
           var nt = performance.now();
           if (lastT) { var dt = nt - lastT; if (dt > 0) { var sp = Math.sqrt((e.clientX - lastCX) * (e.clientX - lastCX) + (e.clientY - lastCY) * (e.clientY - lastCY)) / dt; var nv = Math.min(sp / 1.6, 1); if (nv > tgtVel) tgtVel = nv; } }
           lastCX = e.clientX; lastCY = e.clientY; lastT = nt;
+          kick();
         }, { passive: true });
         document.addEventListener('mouseleave', function () { tgtAct = 0; tgtVel = 0; });
         window.addEventListener('blur', function () { tgtAct = 0; tgtVel = 0; });
+        var running = false;
         function frame() {
           act += (tgtAct - act) * 0.14;
           vel += (tgtVel - vel) * 0.14;
           tgtVel *= 0.90;
-          var time = (performance.now() - t0) / 1000;
-          gl.useProgram(prog);
-          gl.clearColor(0, 0, 0, 0);
-          gl.clear(gl.COLOR_BUFFER_BIT);
-          gl.uniform2f(U.res, canvas.width, canvas.height);
-          gl.uniform1f(U.time, time);
-          gl.uniform2f(U.mouse, mxx, 1.0 - myy);
-          gl.uniform1f(U.act, act);
-          gl.uniform1f(U.vel, vel);
-          gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, glTex); gl.uniform1i(U.tex, 0);
-          gl.drawArrays(gl.TRIANGLES, 0, 6);
+          if (!document.hidden) {
+            var time = (performance.now() - t0) / 1000;
+            gl.useProgram(prog);
+            gl.clearColor(0, 0, 0, 0);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+            gl.uniform2f(U.res, canvas.width, canvas.height);
+            gl.uniform1f(U.time, time);
+            gl.uniform2f(U.mouse, mxx, 1.0 - myy);
+            gl.uniform1f(U.act, act);
+            gl.uniform1f(U.vel, vel);
+            gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, glTex); gl.uniform1i(U.tex, 0);
+            gl.drawArrays(gl.TRIANGLES, 0, 6);
+          }
+          // sleep once settled & idle so the carousel gets the full frame budget; mousemove wakes it
+          if (document.hidden || (tgtAct < 0.001 && act < 0.003)) { running = false; return; }
           requestAnimationFrame(frame);
         }
-        requestAnimationFrame(frame);
+        function kick() { if (!running && !document.hidden) { running = true; requestAnimationFrame(frame); } }
+        document.addEventListener('visibilitychange', function () { if (!document.hidden) kick(); });
+        kick();
       }
-      if (document.fonts && document.fonts.load) document.fonts.load('700 100px Outfit').then(start, start); else start();
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(start, start); else start();
     })();
 
     /* ============================================================
@@ -1194,25 +1208,31 @@
           mx = (e.clientX - r.left) / r.width; my = (e.clientY - r.top) / r.height;
           var near = e.clientX >= r.left - 50 && e.clientX <= r.right + 50 && e.clientY >= r.top - 50 && e.clientY <= r.bottom + 50;
           tgtAct = near ? 1 : 0;
+          kick();
           var nt = performance.now();
           if (lastT) { var dt = nt - lastT; if (dt > 0) { var sp = Math.sqrt((e.clientX - lastCX) * (e.clientX - lastCX) + (e.clientY - lastCY) * (e.clientY - lastCY)) / dt; var nv = Math.min(sp / 1.6, 1); if (nv > tgtVel) tgtVel = nv; } }
           lastCX = e.clientX; lastCY = e.clientY; lastT = nt;
         }, { passive: true });
         document.addEventListener('mouseleave', function () { tgtAct = 0; tgtVel = 0; });
 
+        var running = false;
         function frame() {
-          if (active) { eAct += (tgtAct - eAct) * 0.14; eVel += (tgtVel - eVel) * 0.14; tgtVel *= 0.9; paint(); }
+          if (active && !document.hidden) { eAct += (tgtAct - eAct) * 0.14; eVel += (tgtVel - eVel) * 0.14; tgtVel *= 0.9; paint(); }
+          // sleep when idle & settled so it never competes with the carousel; mousemove/typing wakes it
+          if (!active || document.hidden || (tgtAct < 0.001 && eAct < 0.003)) { running = false; return; }
           requestAnimationFrame(frame);
         }
+        function kick() { if (!running && active && !document.hidden) { running = true; requestAnimationFrame(frame); } }
+        document.addEventListener('visibilitychange', function () { if (!document.hidden) kick(); });
         function begin() {
           relayout();
-          var rt; window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(relayout, 150); });
-          frame();
+          var rt; window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(function () { relayout(); kick(); }, 150); });
+          kick();
           if (opts.typewriter && active) {
-            drawTex();
+            drawTex(); paint();
             (function tick() {
-              if (!active) { typed = fullText.length; drawTex(); return; }
-              typed++; drawTex();
+              if (!active) { typed = fullText.length; drawTex(); paint(); return; }
+              typed++; drawTex(); paint();
               if (typed >= fullText.length) { return; }
               var jt = fullText[typed - 1], dl = 36 + Math.random() * 26;
               if (jt === ' ') dl += 22; else if (jt === ',') dl += 180; else if (jt === '.') dl += 260;

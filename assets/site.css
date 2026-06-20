@@ -192,7 +192,7 @@ body.menu-open .nav { z-index: 300; } /* lift nav (with its X close button) abov
 .field label .req { color: var(--accent); }
 .field label .opt { text-transform: none; letter-spacing: 0; opacity: 0.7; }
 .field input, .field select, .field textarea {
-  width: 100%; font-family: inherit; font-size: 15px; color: #fff;
+  width: 100%; font-family: inherit; font-size: 16px; color: #fff;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 12px; padding: 13px 15px;
