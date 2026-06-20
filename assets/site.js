@@ -1,6 +1,15 @@
 /* ============================================================
    SanFlorence — shared behavior: mobile menu + FAQ accordion
    ============================================================ */
+
+// ---- tab-visibility title swap ----
+(function () {
+  var real = document.title;
+  document.addEventListener('visibilitychange', function () {
+    document.title = document.hidden ? "\u{1F440} Where’d you go?" : real;
+  });
+})();
+
 (function () {
   // ---- mobile menu ----
   var burger = document.getElementById('navBurger');
