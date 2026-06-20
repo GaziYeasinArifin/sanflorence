@@ -220,12 +220,13 @@
     .carousel.marquee {
       padding-left: 0;
       padding-right: 0;
+      overflow-x: hidden;          /* transform drives the strip on the compositor; no native scroll */
       -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 var(--pad-x), #000 calc(100% - var(--pad-x)), transparent);
       mask-image: linear-gradient(90deg, transparent 0, #000 var(--pad-x), #000 calc(100% - var(--pad-x)), transparent);
     }
     .carousel::-webkit-scrollbar { display: none; }
     .carousel.dragging { cursor: default; }
-    .track { display: flex; gap: clamp(16px, 1.6vw, 24px); width: max-content; }
+    .track { display: flex; gap: clamp(16px, 1.6vw, 24px); width: max-content; will-change: transform; }
     .card {
       position: relative;
       width: clamp(255px, 23vw, 322px);
@@ -238,11 +239,14 @@
       overflow: hidden;
       isolation: isolate;
       color: #fff;
-      background: rgba(255, 255, 255, 0.10);
+      /* baked frosted glass: a milky veil instead of a live backdrop-blur, so the 8 moving
+         marquee cards no longer re-blur the background every frame (keeps the scroll smooth).
+         Over the soft gradient bg it reads almost identically to a real blur. */
+      background:
+        linear-gradient(155deg, rgba(255,255,255,0.20) 0%, rgba(255,255,255,0.06) 60%),
+        rgba(255, 255, 255, 0.10);
       border: 1px solid rgba(255, 255, 255, 0.22);
-      backdrop-filter: blur(22px) saturate(150%);
-      -webkit-backdrop-filter: blur(22px) saturate(150%);
-      transition: transform 0.45s cubic-bezier(.2,.7,.2,1), background 0.4s ease, backdrop-filter 0.4s ease;
+      transition: transform 0.45s cubic-bezier(.2,.7,.2,1), background 0.4s ease;
       user-select: none;
       -webkit-user-select: none;
     }
@@ -256,7 +260,9 @@
     }
     .card:hover {
       transform: translateY(-8px);
-      background: rgba(255, 255, 255, 0.18);
+      background:
+        linear-gradient(155deg, rgba(255,255,255,0.30) 0%, rgba(255,255,255,0.12) 60%),
+        rgba(255, 255, 255, 0.14);
     }
     /* arrow floats in the top-right corner so it no longer reserves a row */
     .card-head {
@@ -729,31 +735,13 @@
       if (!carousel) return;
       var track = carousel.querySelector('.track');
       var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      var isDown = false, startX = 0, startScroll = 0, velocity = 0, lastX = 0, lastT = 0, moved = 0, hovering = false, fling = 0;
-      function now() { return performance.now(); }
-      carousel.addEventListener('pointerdown', function (e) {
-        isDown = true; moved = 0; fling = 0;
-        startX = e.clientX; startScroll = carousel.scrollLeft;
-        lastX = e.clientX; lastT = now(); velocity = 0;
-        carousel.classList.add('dragging');
-        try { carousel.setPointerCapture(e.pointerId); } catch (err) {}
-      });
+      var hovering = false, moved = 0, downX = 0, isDown = false;
+      carousel.addEventListener('pointerdown', function (e) { isDown = true; moved = 0; downX = e.clientX; });
       carousel.addEventListener('pointermove', function (e) {
-        if (e.pointerType === 'mouse') hovering = true;
-        if (!isDown) return;
-        var dx = e.clientX - startX;
-        moved = Math.abs(dx);
-        carousel.scrollLeft = startScroll - dx;
-        var t = now(), dt = t - lastT;
-        if (dt > 0) velocity = (e.clientX - lastX) / dt;
-        lastX = e.clientX; lastT = t;
+        if (e.pointerType === 'mouse') { hovering = true; kick(); }
+        if (isDown) moved = Math.max(moved, Math.abs(e.clientX - downX));
       });
-      function endDrag() {
-        if (!isDown) return;
-        isDown = false;
-        carousel.classList.remove('dragging');
-        fling = reduceMotion ? 0 : -velocity * 16; // hand momentum to the marquee loop
-      }
+      function endDrag() { isDown = false; }
       carousel.addEventListener('pointerup', endDrag);
       carousel.addEventListener('pointercancel', endDrag);
       carousel.addEventListener('click', function (e) {
@@ -769,8 +757,8 @@
       if (reduceMotion || !track) return; // static padded carousel when motion is reduced
 
       // ---- seamless auto-scroll marquee (right -> left); pauses on hover/drag ----
-      carousel.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse') hovering = true; });
-      carousel.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') hovering = false; });
+      carousel.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse') { hovering = true; kick(); } });
+      carousel.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') { hovering = false; kick(); } });
 
       // ---- hovering an app card takes over the hero (per-app "mode") — hover-capable (desktop) only ----
       if (window.matchMedia && window.matchMedia('(hover: hover)').matches) {
@@ -789,55 +777,80 @@
           }
         });
       }
+      // ============================================================
+      //  COMPOSITOR-DRIVEN MARQUEE — the strip moves via a Web Animations API
+      //  transform that runs on the GPU/compositor thread, fully independent of the
+      //  main thread. However busy the WebGL background or JS get, it cannot stutter.
+      // ============================================================
       var gap = parseFloat(getComputedStyle(track).columnGap) || 20;
-      var loopWidth = 0;
-      function setup() {
+      var PX_PER_S = 136;         // base auto-scroll speed (2x)
+      var loopWidth = 0, anim = null, durMs = 0;
+      function build() {
         var clones = track.querySelectorAll('[data-clone]');
         for (var k = 0; k < clones.length; k++) track.removeChild(clones[k]);
-        loopWidth = track.scrollWidth + gap;           // one full set + the joining gap
+        loopWidth = track.scrollWidth + gap;           // one full set + the joining gap = one loop period
         var originals = Array.prototype.slice.call(track.children);
-        for (var j = 0; j < originals.length; j++) {
-          var c = originals[j].cloneNode(true);
-          c.setAttribute('data-clone', '1');
-          c.setAttribute('aria-hidden', 'true');
-          var links = c.querySelectorAll('a');
-          for (var m = 0; m < links.length; m++) links[m].setAttribute('tabindex', '-1');
-          track.appendChild(c);
+        // Clone whole sets until the strip covers the viewport plus a full period. One set of 4
+        // cards is narrower than a wide screen, so a single clone leaves a blank gap before the
+        // loop repeats ("cards appear later"); enough copies make the repeat seamless at any width.
+        var need = carousel.clientWidth + loopWidth * 2;
+        var total = loopWidth;
+        while (total < need) {
+          for (var j = 0; j < originals.length; j++) {
+            var c = originals[j].cloneNode(true);
+            c.setAttribute('data-clone', '1');
+            c.setAttribute('aria-hidden', 'true');
+            var links = c.querySelectorAll('a');
+            for (var m = 0; m < links.length; m++) links[m].setAttribute('tabindex', '-1');
+            track.appendChild(c);
+          }
+          total += loopWidth;
         }
       }
+      function startAnim() {
+        var prevRate = anim ? anim.playbackRate : 1;
+        if (anim) { anim.cancel(); anim = null; }
+        if (!loopWidth || !track.animate) return;
+        durMs = (loopWidth / PX_PER_S) * 1000;
+        anim = track.animate(
+          [{ transform: 'translate3d(0,0,0)' }, { transform: 'translate3d(' + (-loopWidth) + 'px,0,0)' }],
+          { duration: durMs, iterations: Infinity, easing: 'linear' }
+        );
+        try { anim.playbackRate = prevRate; } catch (e) {}
+      }
       carousel.classList.add('marquee');
-      setup();
-      var PX_PER_S = 68;    // gentle auto-scroll speed (px/s), constant at any frame rate
-      var pos = 0;
-      var pending = 0;      // scroll travel still to apply (px, signed). Drains smoothly each frame so the
-                            // strip tracks the gesture exactly: slow/fast, forward/backward, butter smooth.
+      build();
+      startAnim();
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { build(); startAnim(); });
+      var rt; window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(function () { build(); startAnim(); }, 200); });
+
+      // ---- vertical scroll nudges playback rate (faster down / reverse up); hover eases to a stop ----
+      var boost = 0, rate = 1, ticking = false;
       window.addEventListener('wheel', function (e) {
-        pending += e.deltaY * 0.85;                         // vertical scroll distance -> horizontal travel
-        if (pending > 1400) pending = 1400;                 // bound a pathological fling
-        else if (pending < -1400) pending = -1400;
+        boost += e.deltaY * 0.024;
+        if (boost > 12) boost = 12; else if (boost < -12) boost = -12;
+        kick();
       }, { passive: true });
-      var prevT = now();
-      (function loop(ts) {
-        var dt = Math.min(ts - prevT, 50); prevT = ts;     // clamp tab-switch / GC pauses
-        var s = dt / 1000;                                  // seconds elapsed this frame
-        if (isDown) {
-          pos = carousel.scrollLeft;
-        } else {
-          if (!hovering) pos += PX_PER_S * s;               // steady auto-advance (paused on hover)
-          var keep = Math.exp(-s / 0.10);                   // 100ms ease — wheel notches become fluid glide
-          var step = pending * (1 - keep);                  // drain a slice of the gesture this frame
-          pos += step; pending -= step;
-          if (Math.abs(pending) < 0.05) pending = 0;
-          pos += fling;                                     // drag-release momentum
-          fling *= Math.pow(0.003, s);
-          if (Math.abs(fling) < 0.1) fling = 0;
-          if (loopWidth > 0) { pos = pos % loopWidth; if (pos < 0) pos += loopWidth; }
-          carousel.scrollLeft = pos;
+      function tick() {
+        boost *= 0.90; if (Math.abs(boost) < 0.004) boost = 0;
+        var target = hovering ? 0 : (1 + boost);
+        rate += (target - rate) * 0.16;
+        if (target === 0 && rate < 0.02 && rate > -0.02) rate = 0;     // settle to a full stop on hover
+        if (anim) {
+          try {
+            anim.playbackRate = rate;
+            if (rate < 0 && durMs && anim.currentTime != null && anim.currentTime < durMs) {
+              anim.currentTime += durMs;                                 // keep room so reverse never sticks at the start
+            }
+          } catch (e) {}
         }
-        requestAnimationFrame(loop);
-      })(now());
-      if (document.fonts && document.fonts.ready) document.fonts.ready.then(setup);
-      var rt; window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(setup, 200); });
+        if (boost === 0 && Math.abs(rate - target) < 0.004) {           // settled — stop ticking (zero idle cost)
+          rate = target; if (anim) { try { anim.playbackRate = rate; } catch (e) {} } ticking = false; return;
+        }
+        requestAnimationFrame(tick);
+      }
+      function kick() { if (!ticking) { ticking = true; requestAnimationFrame(tick); } }
+      document.addEventListener('visibilitychange', function () { if (!document.hidden) kick(); });
     })();
 
     /* ============================================================
