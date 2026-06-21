@@ -311,6 +311,8 @@
     .card-dimmed { opacity: 0.72; }
     .card-dimmed:hover { transform: translateY(-4px); }
     .card-dimmed:hover .card-icon { transform: none; }
+    /* a selected coming-soon card lifts to full opacity so its icon + copy read clearly */
+    body.soon-mode .card-dimmed:hover, body.soon-mode .card-dimmed.pressed { opacity: 1; }
 
     /* ---- Giant SanFlorence wordmark (WebGL, transparent over the red) ---- */
     .wordmark { flex: 0 0 auto; width: 100%; overflow: hidden; position: relative; z-index: 1; padding: 0 var(--pad-x); }
@@ -407,6 +409,9 @@
     body.mes-mode .card.pressed::before, body.decor-mode .card.pressed::before, body.soon-mode .card.pressed::before {
       background: none;
       opacity: 1;
+      z-index: 0;                  /* keep the blur BELOW the icon/text (z-index 1) — iOS Safari
+                                      otherwise composites a backdrop-filter pseudo OVER siblings,
+                                      which blurred the app icon and copy on the selected card */
       backdrop-filter: blur(30px) saturate(160%);
       -webkit-backdrop-filter: blur(30px) saturate(160%);
       -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 38%, transparent 92%);
