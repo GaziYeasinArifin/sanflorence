@@ -245,12 +245,13 @@
          marquee cards no longer re-blur the background every frame (keeps the scroll smooth).
          Over the soft gradient bg it reads almost identically to a real blur. */
       background:
-        linear-gradient(155deg, rgba(255,255,255,0.20) 0%, rgba(255,255,255,0.06) 60%),
-        rgba(255, 255, 255, 0.10);
+        linear-gradient(155deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.03) 60%),
+        rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.22);
       transition: transform 0.45s cubic-bezier(.2,.7,.2,1), background 0.4s ease;
       user-select: none;
       -webkit-user-select: none;
+      -webkit-touch-callout: none;   /* no iOS save/preview menu on press-and-hold */
     }
     .card::before { /* specular glass sheen */
       content: '';
@@ -344,15 +345,26 @@
       .hero {
         flex-direction: column;
         align-items: flex-start;
-        gap: 12px;
-        padding: 24px var(--pad-x) 8px;
+        gap: 10px;
+        padding: 20px var(--pad-x) 10px;
       }
+      .hero-title { font-size: clamp(3rem, 16vw, 4.6rem); }
       .hero-line { text-align: left; max-width: 34ch; font-size: clamp(15px, 4.4vw, 20px); }
-      .footer { justify-content: flex-start; }
+      /* cards fill the leftover height (so the strip is the centerpiece, not a void) but the
+         dvh-aware calc keeps them from overflowing the one-screen lock on short phones */
+      .card { height: clamp(290px, calc(100dvh - 390px), 500px); width: clamp(244px, 74vw, 300px); border-radius: 24px; }
+      .footer { justify-content: space-between; }
     }
     @media (max-width: 480px) {
       .nav-right { gap: 14px; }
       .nav-link { letter-spacing: 0.1em; }
+    }
+    /* short screens (landscape phones, tiny windows): drop the one-screen lock and allow
+       scrolling so the hero, cards, wordmark and footer never clip */
+    @media (max-height: 620px) {
+      body.home { height: auto; min-height: 100dvh; overflow-y: auto; }
+      .card { height: clamp(260px, 64vh, 340px); }
+      .carousel-wrap { padding: 8px 0; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -385,13 +397,14 @@
     /* wordmark stays "SanFlorence" in mes mode (no swap) */
 
     /* only the hovered/selected card: dark->light vertical gradient, blur fades out toward the bottom */
-    body.mes-mode .card:hover {
+    body.mes-mode .card:hover, body.mes-mode .card.pressed {
       background: linear-gradient(180deg, rgba(1,3,12,0.93) 0%, rgba(6,11,28,0.6) 50%, rgba(34,48,86,0.12) 100%);
       backdrop-filter: none;
       -webkit-backdrop-filter: none;
       border-color: rgba(255, 255, 255, 0.16);
     }
-    body.mes-mode .card:hover::before, body.decor-mode .card:hover::before, body.soon-mode .card:hover::before {
+    body.mes-mode .card:hover::before, body.decor-mode .card:hover::before, body.soon-mode .card:hover::before,
+    body.mes-mode .card.pressed::before, body.decor-mode .card.pressed::before, body.soon-mode .card.pressed::before {
       background: none;
       opacity: 1;
       backdrop-filter: blur(30px) saturate(160%);
@@ -446,7 +459,7 @@
     }
 
     /* DECOR MODE — warm "redesign" takeover on the Home & Wedding Decor card */
-    body.decor-mode .card:hover {
+    body.decor-mode .card:hover, body.decor-mode .card.pressed {
       background: linear-gradient(180deg, rgba(18,8,2,0.92) 0%, rgba(40,20,6,0.58) 50%, rgba(150,95,40,0.12) 100%);
       backdrop-filter: none;
       -webkit-backdrop-filter: none;
@@ -474,7 +487,7 @@
     .swatch.palette i { width: 16px; height: 16px; border-radius: 50%; display: block; }
 
     /* SOON MODE — violet "in the studio" takeover on the upcoming-app cards */
-    body.soon-mode .card:hover {
+    body.soon-mode .card:hover, body.soon-mode .card.pressed {
       background: linear-gradient(180deg, rgba(8,3,20,0.93) 0%, rgba(20,8,42,0.6) 50%, rgba(80,50,140,0.12) 100%);
       backdrop-filter: none;
       -webkit-backdrop-filter: none;
@@ -739,8 +752,20 @@
       var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       var hovering = false, moved = 0, isDown = false;
       var dragStartX = 0, dragFrom = 0, dragOffset = 0, dragVel = 0, dragLastX = 0, dragLastT = 0;
+      var pressTimer = null, longActive = false, suppressClick = false, pressedCard = null;
+      function setMode(app) {
+        document.body.classList.toggle('mes-mode', app === 'mes');
+        document.body.classList.toggle('decor-mode', app === 'decor');
+        document.body.classList.toggle('soon-mode', app === 'soon');
+      }
+      function clearMode() {
+        document.body.classList.remove('mes-mode', 'decor-mode', 'soon-mode');
+        var ps = carousel.querySelectorAll('.card.pressed');
+        for (var i = 0; i < ps.length; i++) ps[i].classList.remove('pressed');
+        pressedCard = null;
+      }
       carousel.addEventListener('pointerdown', function (e) {
-        isDown = true; moved = 0;
+        isDown = true; moved = 0; suppressClick = false;
         dragStartX = e.clientX; dragOffset = dragFrom = anim ? currentX() : 0;
         dragVel = 0; dragLastX = e.clientX; dragLastT = performance.now();
         if (anim) {                                   // hand the strip to the finger
@@ -748,12 +773,28 @@
           carousel.classList.add('dragging');
           try { carousel.setPointerCapture(e.pointerId); } catch (err) {}
         }
+        // touch press-and-hold -> preview this card's hero takeover (mobile has no hover)
+        if (anim && e.pointerType !== 'mouse') {
+          var held = e.target.closest && e.target.closest('[data-app]');
+          if (held) {
+            clearTimeout(pressTimer);
+            pressTimer = setTimeout(function () {
+              if (!isDown || moved > 10) return;
+              longActive = true; suppressClick = true; pressedCard = held;
+              held.classList.add('pressed');
+              setMode(held.getAttribute('data-app'));
+              if (navigator.vibrate) { try { navigator.vibrate(12); } catch (err) {} }
+            }, 300);
+          }
+        }
       });
       carousel.addEventListener('pointermove', function (e) {
         if (e.pointerType === 'mouse' && !isDown) { hovering = true; kick(); }
         if (!isDown) return;
         var dx = e.clientX - dragStartX;
         moved = Math.max(moved, Math.abs(dx));
+        if (moved > 10 && pressTimer) { clearTimeout(pressTimer); pressTimer = null; } // a drag cancels the hold
+        if (longActive) return;                       // previewing — keep the held card still
         if (!anim) return;                            // reduce-motion: native scroll handles it
         dragOffset = dragFrom + dx;                   // follow the finger — left or right, 1:1
         showAt(dragOffset);                           // drive the paused compositor animation to that position
@@ -764,6 +805,8 @@
       function endDrag() {
         if (!isDown) return;
         isDown = false;
+        clearTimeout(pressTimer); pressTimer = null;
+        if (longActive) { longActive = false; clearMode(); } // end the preview, revert the hero
         if (!anim) return;
         carousel.classList.remove('dragging');
         var relRate = -dragVel * 1000 / PX_PER_S;     // continue in the flung direction...
@@ -774,7 +817,9 @@
       }
       carousel.addEventListener('pointerup', endDrag);
       carousel.addEventListener('pointercancel', endDrag);
+      carousel.addEventListener('contextmenu', function (e) { e.preventDefault(); }); // no long-press menu on touch
       carousel.addEventListener('click', function (e) {
+        if (suppressClick) { suppressClick = false; e.preventDefault(); e.stopPropagation(); return; } // ended a press-preview
         if (moved > 8) { e.preventDefault(); e.stopPropagation(); return; } // a drag, not a tap
         var card = e.target.closest('.card[data-href]');
         if (!card) return;                          // coming-soon cards: nothing to open
@@ -788,21 +833,15 @@
       carousel.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse') { hovering = true; kick(); } });
       carousel.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') { hovering = false; kick(); } });
 
-      // ---- hovering an app card takes over the hero (per-app "mode") — hover-capable (desktop) only ----
+      // ---- hovering a card takes over the hero on desktop; press-and-hold does it on touch ----
       if (window.matchMedia && window.matchMedia('(hover: hover)').matches) {
         carousel.addEventListener('mouseover', function (e) {
           var card = e.target.closest && e.target.closest('[data-app]');
-          if (!card) return;
-          var app = card.getAttribute('data-app');
-          document.body.classList.toggle('mes-mode', app === 'mes');
-          document.body.classList.toggle('decor-mode', app === 'decor');
-          document.body.classList.toggle('soon-mode', app === 'soon');
+          if (card) setMode(card.getAttribute('data-app'));
         });
         carousel.addEventListener('mouseout', function (e) {
           var to = e.relatedTarget;
-          if (!to || !to.closest || !to.closest('[data-app]')) {
-            document.body.classList.remove('mes-mode', 'decor-mode', 'soon-mode');
-          }
+          if (!to || !to.closest || !to.closest('[data-app]')) clearMode();
         });
       }
       // ============================================================
@@ -826,6 +865,7 @@
         while (total < need) {
           for (var j = 0; j < originals.length; j++) {
             var c = originals[j].cloneNode(true);
+            c.classList.remove('pressed');             // never inherit a transient press state
             c.setAttribute('data-clone', '1');
             c.setAttribute('aria-hidden', 'true');
             var links = c.querySelectorAll('a');
