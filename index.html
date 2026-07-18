@@ -757,7 +757,7 @@
       var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       var hovering = false, moved = 0, isDown = false;
       var dragStartX = 0, dragFrom = 0, dragOffset = 0, dragVel = 0, dragLastX = 0, dragLastT = 0;
-      var pressTimer = null, longActive = false, suppressClick = false, pressedCard = null;
+      var pressTimer = null, longActive = false, suppressClick = false, pressedCard = null, downCard = null;
       function setMode(app) {
         document.body.classList.toggle('mes-mode', app === 'mes');
         document.body.classList.toggle('decor-mode', app === 'decor');
@@ -771,6 +771,10 @@
       }
       carousel.addEventListener('pointerdown', function (e) {
         isDown = true; moved = 0; suppressClick = false;
+        // resolve the card BEFORE setPointerCapture — once captured, the browser retargets every
+        // subsequent event for this pointer (including the click that follows) to the carousel
+        // itself, so e.target.closest('.card') in the click handler would always come back empty.
+        downCard = e.target.closest && e.target.closest('.card[data-href]');
         dragStartX = e.clientX; dragOffset = dragFrom = anim ? currentX() : 0;
         dragVel = 0; dragLastX = e.clientX; dragLastT = performance.now();
         if (anim) {                                   // hand the strip to the finger
@@ -826,7 +830,7 @@
       carousel.addEventListener('click', function (e) {
         if (suppressClick) { suppressClick = false; e.preventDefault(); e.stopPropagation(); return; } // ended a press-preview
         if (moved > 8) { e.preventDefault(); e.stopPropagation(); return; } // a drag, not a tap
-        var card = e.target.closest('.card[data-href]');
+        var card = downCard;                        // captured pre-pointerCapture; e.target is unreliable here
         if (!card) return;                          // coming-soon cards: nothing to open
         e.preventDefault();                          // take over nav for the whole card AND the badge
         window.open(card.getAttribute('data-href'), '_blank', 'noopener,noreferrer'); // NEW TAB ONLY
