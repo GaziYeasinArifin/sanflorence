@@ -83,7 +83,7 @@
       var lines = ['Name: ' + name, 'Email: ' + email];
       if (company) lines.push('Company: ' + company);
       lines.push('Topic: ' + topic, '', message);
-      window.location.href = 'mailto:hisanflorence@gmail.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(lines.join('\n'));
+      window.location.href = 'mailto:hello@sanflorence.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(lines.join('\n'));
       if (status) status.textContent = 'Opening your email app to send…';
     });
   }
