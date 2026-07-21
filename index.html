@@ -1056,7 +1056,13 @@
         }
       });
 
-      if (document.body.classList.contains('home') && !store.get(K_SEEN) && !store.get(K_SIGNED)) {
+      if (!document.body.classList.contains('home') || store.get(K_SEEN) || store.get(K_SIGNED)) {
+        // Not eligible (returning visitor, already signed up, or not the homepage).
+        // autoDone must be latched HERE, not just left un-armed: the visibilitychange
+        // handler above re-arms the timer on its own, so without this a returning
+        // visitor who tabs away and comes back gets the popup again, every time.
+        autoDone = true;
+      } else {
         var noteTouch = function () { lastTouchAt = Date.now(); };
         var evts = ['pointerdown', 'wheel', 'touchmove', 'keydown'];
         for (var i = 0; i < evts.length; i++) {
