@@ -104,7 +104,7 @@
     try { window.sessionStorage.setItem(SF_WL_SIGNED_UP_KEY, String(Date.now())); } catch (e) {}
   }
 
-  var WAITLIST_ENDPOINT = 'https://script.google.com/macros/s/PASTE_YOUR_DEPLOYMENT_ID/exec';
+  var WAITLIST_ENDPOINT = 'https://script.google.com/macros/s/AKfycbyjPb5Hg1gm-YQWzpGFdLZaBTRNmjJgyImlwmbzU4mcbqPo5Tz4v92pOn6RzBqSW5NL/exec';
 
   Array.prototype.forEach.call(document.querySelectorAll('form[data-waitlist]'), function (form) {
     if (!window.fetch) return;                       // no fetch: leave the form inert rather than lying
