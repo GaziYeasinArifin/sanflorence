@@ -91,6 +91,19 @@
   // ---- waitlist -> Google Sheet via Apps Script --------------------------------
   // Binds EVERY form[data-waitlist] on the page: waitlist.html has one, index.html's
   // modal has another. Never bind by id — site.js loads on both pages.
+  // ---- "already signed up" flag -----------------------------------------------
+  // Read by the 10s waitlist popup in index.html's inline controller, which uses
+  // this EXACT key. Change one, change both. Written here rather than by calling
+  // into that controller because site.js also runs on waitlist.html, where the
+  // controller does not exist — and a signup there must suppress the homepage
+  // popup too. Only ever set on a CONFIRMED success; the opaque/unreadable/server
+  // paths never claim success, so they never write it either.
+  var SF_WL_SIGNED_UP_KEY = 'sf.waitlist.signedup.v1';
+  function sfMarkSignedUp() {
+    try { window.localStorage.setItem(SF_WL_SIGNED_UP_KEY, String(Date.now())); return; } catch (e) {}
+    try { window.sessionStorage.setItem(SF_WL_SIGNED_UP_KEY, String(Date.now())); } catch (e) {}
+  }
+
   var WAITLIST_ENDPOINT = 'https://script.google.com/macros/s/PASTE_YOUR_DEPLOYMENT_ID/exec';
 
   Array.prototype.forEach.call(document.querySelectorAll('form[data-waitlist]'), function (form) {
@@ -166,12 +179,14 @@
 
       send(body).then(function (r) {
         if (r.confirmed && r.data.ok && r.data.duplicate) {
+          sfMarkSignedUp();                           // they are on the list: never popup at them again
           say("You're already on the list — nothing more to do.", 'ok');
           if (btn) btn.textContent = 'Already signed up';
           return;                                     // stays disabled: confirmed
         }
         if (r.confirmed && r.data.ok) {
-          say("You're on the list. We'll email you the day it launches — nothing before that.", 'ok');
+          sfMarkSignedUp();                           // they are on the list: never popup at them again
+          say("You're in — and your name's in the hat. We'll write when there's a new app to show you, or a winner to announce.", 'ok');
           if (btn) btn.textContent = 'Signed up';
           return;                                     // stays disabled: confirmed
         }
