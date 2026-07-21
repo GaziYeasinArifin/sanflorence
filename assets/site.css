@@ -71,6 +71,9 @@ body.dark::before {
 .nav-link:hover { color: #fff; }
 .nav-link:hover::after, .nav-link.active::after { transform: scaleX(1); transform-origin: left; }
 .nav-link.active { color: #fff; }
+.nav-link-cta { color: #ff8a78; }
+.nav-link-cta:hover { color: #ffb0a3; }
+.nav-link-cta.active { color: #ff8a78; }
 
 /* hamburger */
 .nav-burger {
