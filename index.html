@@ -230,6 +230,19 @@
     .sheet .btn:hover { transform: translateY(-2px); box-shadow: 0 16px 34px -14px rgba(0, 0, 0, 0.7); }
     .sheet .btn:active { transform: translateY(0); }
     .sheet .btn:disabled { opacity: 0.55; cursor: default; transform: none; box-shadow: none; }
+    .sheet .prize {
+      margin-top: 20px; padding: 15px 17px;
+      border: 1px solid rgba(255, 138, 120, 0.42);
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(255, 138, 120, 0.15), rgba(255, 138, 120, 0.05));
+      font-size: 14.5px; line-height: 1.5; color: #fff;
+    }
+    .sheet .prize strong { font-weight: 600; }
+    .sheet .prize-fine {
+      display: block; margin-top: 9px;
+      font-size: 11px; line-height: 1.55; color: var(--fg-muted);
+    }
+    .sheet .prize-fine a { color: var(--fg-soft); text-decoration: underline; text-underline-offset: 2px; text-decoration-color: var(--accent); }
     .sheet .form-note { font-size: 12px; color: var(--fg-muted); line-height: 1.5; }
     .sheet .form-note a { color: var(--fg-soft); text-decoration: underline; text-underline-offset: 2px; text-decoration-color: var(--accent); }
     .sheet .form-status { font-size: 14px; color: var(--accent); min-height: 1.1em; line-height: 1.45; }
@@ -703,6 +716,11 @@
       <div class="sheet-kicker">Waitlist</div>
       <h2 class="sheet-title" id="waitlistTitle">Be first in line.</h2>
       <p class="sheet-copy">We're finishing a new app in the studio. Join the list and we'll email you once — the day it lands.</p>
+
+      <div class="prize">
+        🎁 <strong>Three winners get a full year free</strong> — your pick of Mes or Home &amp; Wedding Decor AI.
+        <span class="prize-fine">No purchase necessary · 18+ · Open worldwide · Entries close 19 Aug 2026 · Winners drawn by 26 Aug and notified by email. <a href="waitlist.html#giveaway">Full terms</a></span>
+      </div>
 
       <form class="form" id="waitlistSheetForm" data-waitlist novalidate>
         <div class="field">
