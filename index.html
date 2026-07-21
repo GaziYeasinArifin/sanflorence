@@ -106,10 +106,11 @@
       transform: scaleX(0); transform-origin: right; transition: transform 0.3s ease;
     }
     .nav-link:hover { color: #fff; }
-    /* hardcoded coral (not var(--accent), which is blue on this page) so the "Join" link
-       reads as the SAME giveaway color on every page, matching the prize callout. */
-    .nav-link-cta { color: #ff8a78; }
-    .nav-link-cta:hover { color: #ffb0a3; }
+    /* full white against the other links' 70% — brightness alone carries the emphasis,
+       no accent colour needed. Hardcoded rather than var(--accent) so it stays identical
+       on every page (--accent is blue here and coral in site.css). */
+    .nav-link-cta { color: #fff; }
+    .nav-link-cta:hover { color: #fff; }
     .nav-link:hover::after { transform: scaleX(1); transform-origin: left; }
     .theme-toggle {
       background: none; border: none; color: rgba(255, 255, 255, 0.7);
