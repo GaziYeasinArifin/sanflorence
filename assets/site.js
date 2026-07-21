@@ -87,4 +87,114 @@
       if (status) status.textContent = 'Opening your email app to send…';
     });
   }
+
+  // ---- waitlist -> Google Sheet via Apps Script --------------------------------
+  // Binds EVERY form[data-waitlist] on the page: waitlist.html has one, index.html's
+  // modal has another. Never bind by id — site.js loads on both pages.
+  var WAITLIST_ENDPOINT = 'https://script.google.com/macros/s/PASTE_YOUR_DEPLOYMENT_ID/exec';
+
+  Array.prototype.forEach.call(document.querySelectorAll('form[data-waitlist]'), function (form) {
+    if (!window.fetch) return;                       // no fetch: leave the form inert rather than lying
+    var statusEl = form.querySelector('.form-status');
+    var btn      = form.querySelector('button[type="submit"]');
+    var readyAt  = Date.now();
+    var busy     = false;
+
+    function say(msg, kind) {
+      if (!statusEl) return;
+      statusEl.textContent = msg;
+      statusEl.className = 'form-status' + (kind ? ' is-' + kind : '');
+    }
+    function val(name) { var el = form.elements[name]; return el && el.value ? el.value : ''; }
+    function uuid() {
+      if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+      return 'sf-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+    }
+    function unlock(label) {
+      busy = false;
+      if (btn) { btn.disabled = false; if (label) btn.textContent = label; }
+    }
+
+    // Attempt 1 is a real CORS request. URLSearchParams makes fetch send
+    // Content-Type: application/x-www-form-urlencoded, which is CORS-safelisted, so NO
+    // preflight fires — critical, because Apps Script has no doOptions() and can never
+    // answer one. The 302 to script.googleusercontent.com is followed transparently and
+    // that response carries Access-Control-Allow-Origin: *, so the JSON is readable.
+    // If the read is blocked anyway, attempt 2 re-sends with mode:'no-cors' — opaque,
+    // but delivered. Same submission_id both times, so the server de-dupes.
+    function send(body) {
+      return fetch(WAITLIST_ENDPOINT, { method: 'POST', body: body })
+        .then(function (r) { return r.text().then(function (t) { return { status: r.status, text: t }; }); })
+        .then(function (res) {
+          var data = null;
+          try { data = JSON.parse(res.text); } catch (e) {}
+          if (data && typeof data.ok === 'boolean') return { confirmed: true, data: data };
+          return { confirmed: false, reason: res.status >= 500 ? 'server' : 'unreadable' };
+        })
+        .catch(function () {
+          return fetch(WAITLIST_ENDPOINT, { method: 'POST', mode: 'no-cors', body: body })
+            .then(function () { return { confirmed: false, reason: 'opaque' }; })
+            .catch(function () { return { confirmed: false, reason: 'offline' }; });
+        });
+    }
+
+    form.addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      if (busy) return;
+
+      var email = val('email').trim().toLowerCase();
+      var insta = val('instagram').trim().replace(/^@+/, '');
+
+      if (!email) { say("We'll need an email address to reach you.", 'err'); if (form.elements.email) form.elements.email.focus(); return; }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+        say("That email doesn't look quite right — mind checking it?", 'err');
+        if (form.elements.email) form.elements.email.focus();
+        return;
+      }
+
+      var body = new URLSearchParams();
+      body.set('email', email);
+      body.set('instagram', insta);
+      body.set('source', location.pathname);          // pathname only — never a query string
+      body.set('submission_id', uuid());              // idempotency key, reused across the retry
+      body.set('website', val('website'));            // honeypot: must arrive empty
+      body.set('elapsed', String(Date.now() - readyAt));
+
+      busy = true;
+      if (btn) btn.disabled = true;
+      say('Sending…');
+
+      send(body).then(function (r) {
+        if (r.confirmed && r.data.ok && r.data.duplicate) {
+          say("You're already on the list — nothing more to do.", 'ok');
+          if (btn) btn.textContent = 'Already signed up';
+          return;                                     // stays disabled: confirmed
+        }
+        if (r.confirmed && r.data.ok) {
+          say("You're on the list. We'll email you the day it launches — nothing before that.", 'ok');
+          if (btn) btn.textContent = 'Signed up';
+          return;                                     // stays disabled: confirmed
+        }
+        if (r.confirmed && !r.data.ok) {
+          var msgs = {
+            email:     'That email address was rejected — please check it.',
+            instagram: "That doesn't look like an Instagram handle — just the username is fine.",
+            busy:      'We were briefly busy. Please try again.'
+          };
+          say(msgs[r.data.error] || 'Something went wrong on our end. Please try again.', 'err');
+          unlock('Join the waitlist');
+          return;
+        }
+        if (r.reason === 'offline') {
+          say('That didn’t go through. Try again in a moment, or email hello@sanflorence.com.', 'err');
+          unlock('Try again');
+          return;
+        }
+        // 'opaque' | 'unreadable' | 'server': sent, but NOT confirmed. Never claim success here.
+        say('Thanks — your details are on their way. This browser blocked the confirmation, ' +
+            'so if you don’t hear from us, email hello@sanflorence.com.', 'warn');
+        unlock('Send again');
+      });
+    });
+  });
 })();

@@ -223,6 +223,10 @@ body.menu-open .nav { z-index: 300; } /* lift nav (with its X close button) abov
 .form-note { font-size: 13px; color: var(--fg-muted); }
 .form-note a { color: var(--fg-soft); text-decoration: underline; text-underline-offset: 2px; text-decoration-color: var(--accent); }
 .form-status { font-size: 14px; color: var(--accent); min-height: 1.1em; }
+.form-status.is-ok   { color: #4ade80; }
+.form-status.is-err  { color: #f87171; }
+.form-status.is-warn { color: #fbbf24; }
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
 @media (max-width: 560px) { .form-row { grid-template-columns: 1fr; } }
 
 /* ---------------- FAQ accordion ---------------- */

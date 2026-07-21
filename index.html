@@ -151,6 +151,97 @@
     body.menu-open { overflow: hidden; }
     body.menu-open .nav { z-index: 300; } /* lift nav (with its X close button) above the open menu */
 
+    /* ============================================================
+       WAITLIST SHEET — the .menu overlay pattern, made scrollable.
+       Form CSS is duplicated from site.css because index.html does
+       not link it; the token block re-declares site.css's :root so
+       the copied rules resolve to the SAME colors as waitlist.html.
+       ============================================================ */
+    .sheet {
+      --accent: #ff8a78;                        /* site.css coral, NOT the homepage's #1B4FFF */
+      --fg-soft: rgba(255, 255, 255, 0.82);
+      --fg-muted: rgba(255, 255, 255, 0.62);
+
+      position: fixed; inset: 0; z-index: 400;  /* clears .nav 100, .menu 200, .nav-burger 210, menu-open .nav 300 */
+      background: rgba(28, 2, 8, 0.55);
+      backdrop-filter: blur(26px) saturate(150%);
+      -webkit-backdrop-filter: blur(26px) saturate(150%);
+      display: flex; flex-direction: column;    /* NO justify-content — see .sheet-panel */
+      padding: 88px var(--pad-x) 40px;
+      opacity: 0; visibility: hidden;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
+      overflow-y: auto;                         /* body.home is overflow:hidden — the overlay scrolls itself */
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+    }
+    .sheet.open { opacity: 1; visibility: visible; }
+    .sheet-panel {
+      width: 100%; max-width: 460px;
+      margin: auto;                             /* centers when it fits, scrolls from the top when it does not.
+                                                   justify-content:center would strand the title and first field
+                                                   in unreachable negative scroll space on short screens. */
+      flex: 0 0 auto;
+      position: relative;
+      background: rgba(10, 1, 3, 0.58);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: clamp(20px, 3vw, 30px);
+      padding: clamp(26px, 5vw, 40px);
+      opacity: 0; transform: translateY(14px);
+      transition: opacity 0.5s ease 0.08s, transform 0.5s ease 0.08s;
+    }
+    .sheet.open .sheet-panel { opacity: 1; transform: translateY(0); }
+    .sheet-close {
+      position: absolute; top: 10px; right: 12px;
+      width: 40px; height: 40px; border: none; background: none;
+      color: rgba(255, 255, 255, 0.7); font-size: 26px; line-height: 1; cursor: pointer;
+      transition: color 0.2s ease;
+    }
+    .sheet-close:hover { color: #fff; }
+    .sheet-kicker { font-size: 11px; text-transform: uppercase; letter-spacing: 0.22em; color: var(--fg-muted); margin-bottom: 12px; }
+    .sheet-title { font-weight: 600; letter-spacing: -0.03em; line-height: 1.0; font-size: clamp(1.9rem, 5vw, 2.6rem); }
+    .sheet-copy { font-size: 15px; color: var(--fg-soft); margin-top: 12px; line-height: 1.6; }
+
+    /* ---- form (mirrors site.css .form / .field / .btn / .form-status) ---- */
+    .sheet .form { margin-top: 28px; display: grid; gap: 18px; }
+    .sheet .field { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+    .sheet .field label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--fg-muted); }
+    .sheet .field label .req { color: var(--accent); }
+    .sheet .field label .opt { text-transform: none; letter-spacing: 0; opacity: 0.7; }
+    .sheet .field input {
+      width: 100%; font-family: inherit; font-size: 16px; color: #fff;  /* 16px prevents iOS zoom-on-focus — do not shrink */
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 12px; padding: 13px 15px;
+      transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    }
+    .sheet .field input::placeholder { color: rgba(255, 255, 255, 0.38); }
+    .sheet .field input:focus {
+      outline: none; border-color: var(--accent);
+      background: rgba(255, 255, 255, 0.06);
+      box-shadow: 0 0 0 3px rgba(255, 138, 120, 0.18);
+    }
+    .sheet .form-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 4px; }
+    .sheet .btn {
+      font-family: inherit; font-size: 14px; font-weight: 600; letter-spacing: 0.02em;
+      color: #160305; background: #fff; border: none; border-radius: 12px;
+      padding: 14px 30px; cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.25s ease;
+    }
+    .sheet .btn:hover { transform: translateY(-2px); box-shadow: 0 16px 34px -14px rgba(0, 0, 0, 0.7); }
+    .sheet .btn:active { transform: translateY(0); }
+    .sheet .btn:disabled { opacity: 0.55; cursor: default; transform: none; box-shadow: none; }
+    .sheet .form-note { font-size: 12px; color: var(--fg-muted); line-height: 1.5; }
+    .sheet .form-note a { color: var(--fg-soft); text-decoration: underline; text-underline-offset: 2px; text-decoration-color: var(--accent); }
+    .sheet .form-status { font-size: 14px; color: var(--accent); min-height: 1.1em; line-height: 1.45; }
+    .sheet .form-status.is-ok   { color: #4ade80; }
+    .sheet .form-status.is-err  { color: #f87171; }
+    .sheet .form-status.is-warn { color: #fbbf24; }
+    .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .sheet, .sheet-panel { transition: none; }
+    }
+
     /* ---- Home main column ---- */
     .home-main {
       position: relative;
@@ -304,7 +395,7 @@
     .card-tagline { position: relative; z-index: 1; font-size: 13px; line-height: 1.5; color: rgba(255,255,255,0.72); margin-top: 9px; }
     /* CTA pinned to the bottom edge so every card's button aligns across the row */
     .card-foot { position: relative; z-index: 1; margin-top: auto; }
-    .card[data-href] { cursor: pointer; }
+    .card[data-href], .card[data-app="soon"] { cursor: pointer; }
     .card-store { display: inline-block; cursor: pointer; }
     .card-store img { display: block; height: 38px; width: auto; }
     .card-soon { font-size: 11px; text-transform: uppercase; letter-spacing: 0.16em; color: rgba(255,255,255,0.75); display: inline-flex; align-items: center; gap: 8px; }
@@ -368,6 +459,13 @@
       .card { height: clamp(260px, 64vh, 340px); }
       .carousel-wrap { padding: 8px 0; }
     }
+
+    /* Placed AFTER the max-height:620px block and given extra specificity so it beats
+       `body.home { overflow-y: auto }` on short screens — the exact spot where the
+       existing `body.menu-open` lock currently loses and lets the page scroll
+       behind the open menu. */
+    body.sheet-open, body.home.sheet-open { overflow: hidden; }
+    body.menu-open, body.home.menu-open { overflow: hidden; }
 
     @media (prefers-reduced-motion: reduce) {
       .card, .card-icon, .card-arrow, .theme-toggle { transition: none; }
@@ -598,6 +696,36 @@
     <div class="menu-foot">© 2026 SanFlorence Digital LLC</div>
   </div>
 
+  <!-- ===================== WAITLIST SHEET ===================== -->
+  <div class="sheet" id="waitlistSheet" role="dialog" aria-modal="true" aria-labelledby="waitlistTitle" aria-hidden="true">
+    <div class="sheet-panel">
+      <button class="sheet-close" id="waitlistClose" type="button" aria-label="Close">&times;</button>
+      <div class="sheet-kicker">Waitlist</div>
+      <h2 class="sheet-title" id="waitlistTitle">Be first in line.</h2>
+      <p class="sheet-copy">We're finishing a new app in the studio. Join the list and we'll email you once — the day it lands.</p>
+
+      <form class="form" id="waitlistSheetForm" data-waitlist novalidate>
+        <div class="field">
+          <label for="wls-email">Email <span class="req">*</span></label>
+          <input id="wls-email" name="email" type="email" placeholder="you@example.com" required autocomplete="email" inputmode="email">
+        </div>
+        <div class="field">
+          <label for="wls-ig">Instagram <span class="opt">(optional)</span></label>
+          <input id="wls-ig" name="instagram" type="text" placeholder="@yourhandle" autocomplete="off" spellcheck="false">
+        </div>
+        <div class="hp" aria-hidden="true">
+          <label for="wls-website">Website</label>
+          <input id="wls-website" name="website" type="text" tabindex="-1" autocomplete="off">
+        </div>
+        <div class="form-actions">
+          <button class="btn" type="submit">Join the waitlist</button>
+        </div>
+        <span class="form-note">We email once, at launch — there's nothing to unsubscribe from. See our <a href="privacy.html">Privacy Policy</a>.</span>
+        <p class="form-status" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </div>
+
   <div class="home-main">
 
     <!-- ===================== HERO ===================== -->
@@ -748,6 +876,60 @@
     })();
 
     /* ============================================================
+       WAITLIST SHEET — same overlay pattern as the mobile menu
+       ============================================================ */
+    (function () {
+      var sheet = document.getElementById('waitlistSheet');
+      if (!sheet) return;
+      var lastFocus = null;
+
+      function setSheet(open) {
+        sheet.classList.toggle('open', open);
+        sheet.setAttribute('aria-hidden', open ? 'false' : 'true');
+        document.body.classList.toggle('sheet-open', open);
+        if (open) {
+          // drop any hero takeover left over from a hover/press preview
+          document.body.classList.remove('mes-mode', 'decor-mode', 'soon-mode');
+          // close the burger menu so the two overlays can never co-exist
+          var menu = document.getElementById('navMenu');
+          var burger = document.getElementById('navBurger');
+          if (menu && menu.classList.contains('open')) {
+            menu.classList.remove('open');
+            if (burger) { burger.classList.remove('open'); burger.setAttribute('aria-expanded', 'false'); }
+            document.body.classList.remove('menu-open');
+          }
+          lastFocus = document.activeElement;
+          sheet.scrollTop = 0;
+          var first = document.getElementById('wls-email');
+          if (first) first.focus();
+        } else if (lastFocus && lastFocus.focus) {
+          lastFocus.focus();
+        }
+      }
+
+      // backdrop click closes: .sheet-panel is a child, so clicks inside it never target .sheet
+      sheet.addEventListener('click', function (e) {
+        if (e.target === sheet || (e.target.closest && e.target.closest('#waitlistClose'))) setSheet(false);
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && sheet.classList.contains('open')) setSheet(false);
+      });
+
+      // focus trap
+      sheet.addEventListener('keydown', function (e) {
+        if (e.key !== 'Tab' || !sheet.classList.contains('open')) return;
+        var f = sheet.querySelectorAll('button, input, a[href]');
+        if (!f.length) return;
+        var first = f[0], last = f[f.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      });
+
+      window.sfOpenWaitlist = function () { setSheet(true); };
+    })();
+
+    /* ============================================================
        CAROUSEL — drag + momentum
        ============================================================ */
     (function () {
@@ -757,7 +939,7 @@
       var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       var hovering = false, moved = 0, isDown = false;
       var dragStartX = 0, dragFrom = 0, dragOffset = 0, dragVel = 0, dragLastX = 0, dragLastT = 0;
-      var pressTimer = null, longActive = false, suppressClick = false, pressedCard = null, downCard = null;
+      var pressTimer = null, longActive = false, suppressClick = false, pressedCard = null, downCard = null, downSoon = null;
       function setMode(app) {
         document.body.classList.toggle('mes-mode', app === 'mes');
         document.body.classList.toggle('decor-mode', app === 'decor');
@@ -775,6 +957,7 @@
         // subsequent event for this pointer (including the click that follows) to the carousel
         // itself, so e.target.closest('.card') in the click handler would always come back empty.
         downCard = e.target.closest && e.target.closest('.card[data-href]');
+        downSoon = e.target.closest && e.target.closest('.card[data-app="soon"]');   // same pre-capture reason as downCard
         dragStartX = e.clientX; dragOffset = dragFrom = anim ? currentX() : 0;
         dragVel = 0; dragLastX = e.clientX; dragLastT = performance.now();
         if (anim) {                                   // hand the strip to the finger
@@ -831,7 +1014,10 @@
         if (suppressClick) { suppressClick = false; e.preventDefault(); e.stopPropagation(); return; } // ended a press-preview
         if (moved > 8) { e.preventDefault(); e.stopPropagation(); return; } // a drag, not a tap
         var card = downCard;                        // captured pre-pointerCapture; e.target is unreliable here
-        if (!card) return;                          // coming-soon cards: nothing to open
+        if (!card) {                                // no store link — but a coming-soon card opens the waitlist
+          if (downSoon && window.sfOpenWaitlist) { e.preventDefault(); e.stopPropagation(); window.sfOpenWaitlist(); }
+          return;
+        }
         e.preventDefault();                          // take over nav for the whole card AND the badge
         window.open(card.getAttribute('data-href'), '_blank', 'noopener,noreferrer'); // NEW TAB ONLY
       }, true);
