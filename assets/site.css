@@ -177,6 +177,15 @@ body.menu-open .nav { z-index: 300; } /* lift nav (with its X close button) abov
 .legal a { color: #fff; text-decoration: underline; text-underline-offset: 2px; text-decoration-color: var(--accent); }
 .legal a:hover { text-decoration-color: #fff; }
 .legal strong { font-weight: 600; color: #fff; }
+.legal ol { font-size: 15px; line-height: 1.75; color: var(--fg-soft); margin: 0 0 14px 1.3em; }
+/* plain-English summary box at the top of terms + privacy */
+.legal .summary {
+  margin-bottom: 36px; padding: clamp(18px, 3vw, 26px);
+  border: 1px solid rgba(255, 138, 120, 0.32); border-radius: 16px;
+  background: linear-gradient(180deg, rgba(255, 138, 120, 0.10), rgba(255, 138, 120, 0.03));
+}
+.legal .summary h2 { margin-top: 0; }
+.legal .summary ul { margin-bottom: 0; }
 
 .back-home {
   display: inline-flex; align-items: center; gap: 8px;
